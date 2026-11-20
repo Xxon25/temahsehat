@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TemanSehat – Prototipe I</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fbeef4;--surface:#fdf6f9;--ink:#2b3b37;--muted:#586a65;--acc:#a83a6e;--acc-ink:#fff;--acc-text:#8c2a5a;--line:#e3a9c3;--nav:#f8dfe9;
+--p1:#2d5a4a;--p1-ink:#fff;--p2:#e6ede7;--p2-ink:#2d5a4a;--p3:#fbeedd;--p3-ink:#6b4a1f;--danger:#a52a2a;--ok:#dff3e4;--ok-ink:#17512b;--warn:#fff1d6;--warn-ink:#6b4300;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#1c1218;--surface:#2a1b24;--ink:#f3e6ec;--muted:#c3a9b6;--acc:#d96aa0;--acc-ink:#2a0f1c;--acc-text:#f0a6c8;--line:#5a3548;--nav:#2e1a25;--p1:#7fcaa9;--p1-ink:#0f2a20;--p2:#33463f;--p2-ink:#cfe9dd;--p3:#43331f;--p3-ink:#f3d9a8;--danger:#ff9b94;--ok:#183524;--ok-ink:#a8e3bb;--warn:#3a2d10;--warn-ink:#f5d79a}}
+:root[data-theme="dark"]{--bg:#1c1218;--surface:#2a1b24;--ink:#f3e6ec;--muted:#c3a9b6;--acc:#d96aa0;--acc-ink:#2a0f1c;--acc-text:#f0a6c8;--line:#5a3548;--nav:#2e1a25;--p1:#7fcaa9;--p1-ink:#0f2a20;--p2:#33463f;--p2-ink:#cfe9dd;--p3:#43331f;--p3-ink:#f3d9a8;--danger:#ff9b94;--ok:#183524;--ok-ink:#a8e3bb;--warn:#3a2d10;--warn-ink:#f5d79a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"DM Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--nav);z-index:10}
+.app{max-width:560px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--nav);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;padding:10px 18px 0;color:var(--acc-text)}
+.brand b{font-family:"Fraunces",Georgia,serif;font-size:1.1rem}
+.brand span{margin-left:auto;font-size:.85rem;font-weight:700}
+.kel{border:1.5px solid var(--acc-text);background:transparent;color:var(--acc-text);border-radius:14px;padding:2px 12px;font:inherit;font-size:.85rem;font-weight:700;cursor:pointer}
+.nav{display:flex;gap:4px;overflow-x:auto;padding:8px 14px 10px}
+.nav button{flex:0 0 auto;border:0;background:transparent;color:var(--acc-text);font:inherit;font-weight:500;padding:10px 16px;border-radius:16px;cursor:pointer;line-height:1.2;max-width:110px}
+.nav button[aria-current="page"]{background:var(--acc);color:var(--acc-ink);font-weight:700}
+main{flex:1;padding:22px 18px 10px}
+section{display:none}section.on{display:block}
+.eb{letter-spacing:.12em;text-transform:uppercase;font-weight:700;font-size:.8rem;color:var(--acc-text);margin:0 0 18px}
+.up{letter-spacing:.1em;text-transform:uppercase;font-size:.85rem;color:var(--muted);margin:0 0 8px}
+h1,h2{font-family:"Fraunces",Georgia,serif;font-weight:600;line-height:1.2;margin:0 0 12px}
+h1{font-size:1.95rem}h2{font-size:1.45rem;color:var(--acc-text)}
+p{margin:0 0 12px}.mu{color:var(--muted)}.sm{font-size:.92rem;color:var(--muted)}
+.btn{display:block;width:100%;border:0;border-radius:22px;padding:17px 18px;margin:0 0 12px;font:inherit;font-weight:500;text-align:center;cursor:pointer}
+.b1{background:var(--p1);color:var(--p1-ink)}.b2{background:var(--p2);color:var(--p2-ink)}.b3{background:var(--p3);color:var(--p3-ink)}
+.bd{background:transparent;border:2px solid var(--danger);color:var(--danger)}
+.btn:disabled{opacity:.45}
+.row{display:flex;gap:10px}.row .btn{width:auto;flex:1}
+.card{background:var(--surface);border:1.5px solid var(--acc);border-radius:26px;padding:22px;margin:0 0 16px;box-shadow:0 6px 18px rgba(168,58,110,.08)}
+.card hr{border:0;border-top:1px solid var(--line);margin:14px 0}
+.ex{background:var(--nav);color:var(--acc-text);border-radius:16px;padding:14px 16px;margin:0 0 18px}
+.opt{display:block;width:100%;text-align:left;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:18px;padding:14px 16px;margin:0 0 10px;font:inherit;cursor:pointer}
+.fb{border-radius:18px;padding:14px 16px;margin:12px 0}.fb.ok{background:var(--ok);color:var(--ok-ink)}.fb.mid{background:var(--warn);color:var(--warn-ink)}
+.warn{background:var(--surface);border:1.5px solid var(--line);border-left:8px solid var(--line);border-radius:22px;padding:16px 18px;margin:0 0 16px;color:var(--acc-text)}
+.field{display:block;width:100%;border:1.5px solid var(--line);border-radius:18px;background:var(--surface);color:var(--ink);font:inherit;padding:13px 16px;margin:4px 0 14px}
+textarea.field{min-height:110px;resize:vertical}
+label{color:var(--acc-text);font-size:.95rem}
+.tabs{display:flex;gap:6px;margin:0 0 14px}
+.tab{flex:1;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:16px;padding:10px 6px;font:inherit;font-weight:700;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
+.err{color:var(--danger);font-weight:700;min-height:1.4em;margin:0 0 8px}
+.item{border-top:1px solid var(--line);padding:12px 0;font-size:.95rem}
+.note{background:var(--warn);color:var(--warn-ink);border-radius:16px;padding:12px 14px;font-size:.92rem;margin:14px 0}
+.foot{background:var(--nav);border-top:1px solid var(--line);padding:18px 18px calc(84px + env(safe-area-inset-bottom,0px));color:var(--muted);font-size:.95rem}
+.lnk{display:inline-block;border:0;border-bottom:1.5px solid var(--ink);background:transparent;color:var(--ink);font:inherit;margin:4px 16px 0 0;padding:0;cursor:pointer}
+.toast{position:fixed;left:50%;bottom:120px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 18px;border-radius:20px;font-size:.9rem;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
+.toast.show{opacity:1}
+button:focus-visible,.field:focus-visible,.opt:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.helpbar{position:fixed;left:0;right:0;bottom:0;z-index:6;max-width:560px;margin:0 auto;background:var(--surface);border-top:1.5px solid var(--acc);padding:10px 18px calc(10px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:.92rem}
+.helpbar button{flex:0 0 auto;border:0;background:var(--acc);color:var(--acc-ink);border-radius:18px;padding:8px 16px;font:inherit;font-weight:700;cursor:pointer}
+@media print{.helpbar,.top,.foot,.btn,.noprint,.toast{display:none!important}section{display:none!important}section#kartu{display:block!important}body::before{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="top">
+  <div class="brand"><b>TemanSehat</b><span id="peran"></span><button class="kel" id="keluar" hidden>Keluar</button></div>
+  <nav class="nav" id="nav" hidden aria-label="Menu utama"></nav>
+</div>
+<main>
+
+<section id="masuk" class="on">
+  <p class="eb">Masuk · Prototipe edukasi</p>
+  <h1>Selamat datang di TemanSehat.</h1>
+  <p class="mu">Pilih peran kamu terlebih dahulu.</p>
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" data-tab="siswa" aria-selected="true">Siswa</button>
+    <button class="tab" role="tab" data-tab="guru" aria-selected="false">Guru BK</button>
+  </div>
+  <div id="pSiswa" class="card">
+    <h2>Masuk sebagai siswa</h2>
+    <label for="sNama">Nama</label>
+    <input id="sNama" class="field" autocomplete="off" placeholder="Nama lengkap atau panggilan">
+    <label for="sEmail">Gmail</label>
+    <input id="sEmail" class="field" type="email" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="nama@gmail.com">
+    <label class="mu" style="display:block;margin-bottom:12px"><input type="checkbox" id="sSetuju"> Saya setuju nama dan Gmail saya dilihat admin TemanSehat.</label>
+    <p class="err" id="sErr" role="alert"></p>
+    <button class="btn b1" id="lSiswa" style="margin:0">Masuk sebagai siswa</button>
+  </div>
+  <div id="pAkun" class="card" hidden>
+    <label for="lEmail">Gmail</label>
+    <input id="lEmail" class="field" type="email" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="nama@gmail.com">
+    <label for="lPw">Kata sandi</label>
+    <input id="lPw" class="field" type="password" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Kata sandi" style="margin-bottom:6px">
+    <label class="mu" style="display:block;margin-bottom:12px"><input type="checkbox" id="lLihat"> Tampilkan kata sandi</label>
+    <p class="err" id="lErr" role="alert"></p>
+    <button class="btn b1" id="lMasuk">Masuk</button>
+    <p class="sm" id="lHint" style="margin:0"></p>
+  </div>
+  <div class="note">Prototipe ini belum memakai server, jadi verifikasi akun masih sederhana. Pada produk akhir, verifikasi dilakukan di sisi server.</div>
+</section>
+
+<section id="beranda">
+  <p class="eb">Beranda · Prototipe edukasi</p>
+  <p class="up">Ruang belajar pertemanan · usia 15–18 tahun</p>
+  <h1>Berteman itu bisa dipelajari, pelan-pelan.</h1>
+  <p class="mu">Kenali cara membangun pertemanan yang sehat, coba respons dalam situasi rekaan, lalu bawa hal yang penting ke percakapan nyata.</p>
+  <button class="btn b1" data-go="modul">Mulai Belajar →</button>
+  <button class="btn b2" data-go="latihan">Latihan Kasus</button>
+  <button class="btn b3" data-go="bantuan">Butuh Bantuan</button>
+  <div class="card" style="margin-top:26px">
+    <h2 style="font-size:1.25rem">Langkah belajarmu</h2>
+    <p class="sm">Urutan yang disarankan: baca modul, coba skenario, buka Kartu SEHAT, lalu tulis jurnal.</p>
+    <div id="progList"></div>
+  </div>
+  <div class="card">
+    <p style="font-size:1.9rem;margin-bottom:6px">👋 🤝</p>
+    <h2 style="color:var(--ink)">Ruang untuk saling menghargai.</h2>
+    <p class="mu">Sapa dengan baik. Dengarkan tanpa mengolok-olok. Hormati perbedaan dan jaga cerita yang dipercayakan kepadamu.</p>
+    <hr>
+    <p class="sm">Nilai persaudaraan, islah, tidak mengolok-olok, dan menghargai perbedaan menjadi penguat konteks, bukan syarat penggunaan.</p>
+    <p class="sm" style="margin:0">Nama dan Gmail yang kamu isi saat masuk hanya dilihat admin. Jurnal hanya tersimpan di perangkatmu, dan formulir hanya terkirim bila kamu menekan tombol kirim. Media ini bukan konseling, tidak mendiagnosis, dan tidak menggantikan guru BK.</p>
+  </div>
+</section>
+
+<section id="modul">
+  <p class="eb">Modul · Prototipe edukasi</p>
+  <p class="up">Belajar · 6 modul singkat</p>
+  <h1 style="font-size:1.6rem;color:var(--acc-text)">Keterampilan kecil, hubungan lebih baik.</h1>
+  <p class="mu">Baca satu kartu, lihat contoh percakapan, lalu lanjut sesuai waktumu.</p>
+  <div class="card" id="mCard"></div>
+  <p class="sm" id="mCount" style="font-weight:700;color:var(--ink);margin-bottom:2px"></p>
+  <p class="sm">Geser kartu ke kiri atau kanan untuk berpindah modul.</p>
+</section>
+
+<section id="latihan">
+  <div id="l0">
+    <p class="eb">Pemeriksaan keselamatan · Prototipe edukasi</p>
+    <p class="up">Sebelum latihan · periksa keselamatan</p>
+    <h1 style="font-size:1.6rem;color:var(--acc-text)">Keselamatanmu lebih penting daripada latihan.</h1>
+    <div class="card">
+      <p style="color:var(--acc-text)">Bila kamu menghadapi kekerasan, ancaman, atau keinginan menyakiti diri, berhenti di sini. Cari guru BK, orang dewasa tepercaya, atau layanan darurat setempat. Kamu tidak perlu menuliskan detail apa pun di website ini.</p>
+      <p class="mu">Kalau situasinya aman untuk latihan rekaan, kamu boleh lanjut. Kamu juga boleh langsung mencari bantuan.</p>
+      <button class="btn b1" id="lAman">Saya aman untuk berlatih</button>
+      <button class="btn b3" data-go="bantuan" style="margin:0">Cari jalur bantuan</button>
+    </div>
+  </div>
+  <div id="l1" hidden>
+    <p class="eb">Latihan kasus · Prototipe edukasi</p>
+    <p class="up" id="sCount"></p>
+    <h1 id="sJudul" style="font-size:1.6rem;color:var(--acc-text)"></h1>
+    <p class="mu">Tokoh dan situasi ini rekaan. Tidak ada skor dan tidak ada jawaban yang dinilai.</p>
+    <div class="card"><p id="sCerita"></p><p style="margin:0"><b id="sTanya"></b></p></div>
+    <div id="sOpsi"></div>
+    <button class="btn b2" id="sDaftar">Pilih skenario lain</button>
+  </div>
+  <div id="l2" hidden>
+    <p class="eb">Umpan balik · Prototipe edukasi</p>
+    <h1 style="font-size:1.6rem;color:var(--acc-text)">Umpan balik.</h1>
+    <p class="mu" id="uPilih"></p>
+    <div class="fb" id="uBox"><b id="uJenis" style="display:block"></b><span id="uIsi"></span><br><br><b style="display:block">Pelajaran</b><span id="uPel"></span></div>
+    <button class="btn b2" id="lUlang">Coba pilihan lain</button>
+    <button class="btn b1" id="sNext">Skenario berikutnya →</button>
+    <button class="btn b3" data-go="jurnal">Tulis di jurnal</button>
+    <button class="btn b2" id="sDaftar2">Lihat semua skenario</button>
+  </div>
+  <div id="l3" hidden>
+    <p class="eb">Latihan kasus · Prototipe edukasi</p>
+    <p class="up">6 skenario rekaan</p>
+    <h1 style="font-size:1.6rem;color:var(--acc-text)">Pilih situasi yang ingin kamu latih.</h1>
+    <p class="mu">Kerjakan berurutan atau pilih sesuai kebutuhanmu. Tanda ✓ berarti sudah kamu coba.</p>
+    <div id="sList"></div>
+  </div>
+</section>
+
+<section id="kartu">
+  <p class="eb">Kartu SEHAT · Prototipe edukasi</p>
+  <p class="up">Ringkasan satu halaman</p>
+  <div class="card">
+    <h2>Kartu SEHAT</h2>
+    <p class="mu">Lima pengingat untuk mencoba pertemanan yang lebih saling menghargai.</p>
+    <p><b style="color:var(--acc-text)">S — Sapa dan komunikasi:</b> mulai percakapan, dengarkan, tanyakan bila ragu.</p>
+    <p><b style="color:var(--acc-text)">E — Empati:</b> coba pahami perasaan dan sudut pandang teman.</p>
+    <p><b style="color:var(--acc-text)">H — Hati terbuka:</b> jujur secukupnya, jaga privasi.</p>
+    <p><b style="color:var(--acc-text)">A — Andal dan saling percaya:</b> tepati janji, jaga cerita pribadi.</p>
+    <p><b style="color:var(--acc-text)">T — Topang:</b> tawarkan dukungan; libatkan orang dewasa saat perlu.</p>
+    <div class="note" style="background:var(--p3);color:var(--p3-ink)"><b style="color:var(--acc-text)">Waspada dan batas diri:</b> perhatikan perilaku yang merugikan, sampaikan batas, dan cari bantuan bila tidak aman.</div>
+    <p class="sm" style="margin:0">Prototipe edukasi · bukan layanan konseling atau kanal pelaporan.</p>
+  </div>
+  <button class="btn b1 noprint" id="unduh">Unduh Kartu SEHAT (PDF)</button>
+  <button class="btn b2 noprint" id="cetak">Cetak kartu</button>
+  <p class="sm noprint">Jika unduhan tidak muncul, gunakan tombol cetak lalu pilih “Simpan sebagai PDF”.</p>
+</section>
+
+<section id="jurnal">
+  <p class="eb">Jurnal refleksi · Prototipe edukasi</p>
+  <p class="up">Refleksi pribadi</p>
+  <h1 style="font-size:1.6rem;color:var(--acc-text)">Jurnal Refleksi</h1>
+  <p class="mu">Tidak perlu menulis nama teman atau detail sensitif. Jurnal tidak dikirim kepada guru BK. Simpan hanya di perangkat ini bila kamu mau.</p>
+  <div class="card">
+    <label for="j1">Apa yang kamu rasakan saat membaca situasi?</label>
+    <textarea id="j1" class="field"></textarea>
+    <label for="j2">Hal apa yang perlu dijaga dalam pertemanan?</label>
+    <textarea id="j2" class="field"></textarea>
+    <label for="j3">Contoh kalimat “aku” apa yang bisa kamu pakai untuk menyatakan batas?</label>
+    <textarea id="j3" class="field"></textarea>
+    <div class="row"><button class="btn b1" id="jSimpan" style="margin:0">Simpan di perangkat</button><button class="btn b2" id="jHapus" style="margin:0">Hapus jurnal</button></div>
+  </div>
+</section>
+
+<section id="bantuan">
+  <p class="eb">Butuh bantuan · Prototipe edukasi</p>
+  <p class="up">Jalur bantuan</p>
+  <h1 style="font-size:1.6rem;color:var(--acc-text)">Kamu tidak harus menghadapinya sendiri.</h1>
+  <div class="warn">Jika ada kekerasan, ancaman, atau keinginan menyakiti diri, hentikan latihan. Temui guru BK di sekolah, hubungi orang dewasa yang kamu percaya, atau gunakan layanan darurat setempat (di Indonesia: 112) bila ada bahaya segera. Ceritakan secara langsung kepada mereka; website ini bukan kanal pelaporan.</div>
+  <div class="card">
+    <h2 style="font-size:1.25rem">Contoh formulir pendampingan</h2>
+    <p class="mu">Gunakan data contoh saja dan jangan masukkan data asli. Formulir terkirim hanya bila kamu menekan tombol kirim, dan hanya dilihat guru BK.</p>
+    <label for="fNama">Nama panggilan contoh</label>
+    <input id="fNama" class="field" placeholder="Nara (contoh)">
+    <label for="fKelas">Kelas contoh</label>
+    <select id="fKelas" class="field"><option>Kelas X</option><option selected>Kelas XI</option><option>Kelas XII</option></select>
+    <label for="fTopik">Topik umum</label>
+    <select id="fTopik" class="field"><option>Batas diri</option><option>Pertemanan</option><option>Konflik dengan teman</option><option>Lainnya</option></select>
+    <label for="fJadwal">Pilihan waktu</label>
+    <select id="fJadwal" class="field"><option>Saat jam istirahat</option><option>Pulang sekolah</option><option>Bebas</option></select>
+    <p class="sm" id="fOk" role="status" style="color:var(--acc-text);font-weight:700"></p>
+    <button class="btn b1" id="kirim" style="margin:0">Kirim permintaan (demo)</button>
+  </div>
+</section>
+
+<section id="pengaduan">
+  <p class="eb">Pengaduan · Prototipe edukasi</p>
+  <h1 style="font-size:1.6rem;color:var(--acc-text)">Pengaduan dan masukan.</h1>
+  <p class="mu">Sampaikan kendala atau saran tentang TemanSehat kepada admin.</p>
+  <div class="note">Ini bukan kanal pelaporan perundungan atau kekerasan. Jika kamu mengalaminya, gunakan jalur bantuan.</div>
+  <label for="pJenis">Jenis</label>
+  <select id="pJenis" class="field"><option>Kendala teknis</option><option>Saran isi</option><option>Lainnya</option></select>
+  <label for="pIsi">Pesan</label>
+  <textarea id="pIsi" class="field" placeholder="Tulis pesanmu di sini…"></textarea>
+  <p class="sm">Tidak perlu menulis nama. Jangan menulis data pribadi.</p>
+  <p class="err" id="pErr" role="alert"></p>
+  <button class="btn b1" id="pKirim">Kirim pengaduan</button>
+</section>
+
+<section id="guru">
+  <p class="eb">Area guru BK · Prototipe edukasi</p>
+  <h1 style="font-size:1.6rem;color:var(--acc-text)">Area guru BK.</h1>
+  <p class="mu">Data contoh bertanda dummy. Permintaan yang dikirim dari prototipe ini tersimpan di peramban ini.</p>
+  <div class="card">
+    <p><b>Ringkasan akses (agregat, tanpa identitas)</b></p>
+    <p style="margin:0">Modul dibuka: 24 kali<br>Latihan kasus diselesaikan: 18 kali<br>Kartu SEHAT dibuka: 12 kali</p>
+  </div>
+  <div class="card">
+    <p><b>Permintaan pendampingan</b></p>
+    <div id="listPend"></div>
+  </div>
+  <div class="note">Isi jurnal siswa tersimpan di perangkat masing-masing, sehingga tidak tampil di area ini.</div>
+</section>
+
+<section id="admin">
+  <p class="eb">Area admin · Prototipe edukasi</p>
+  <h1 style="font-size:1.6rem;color:var(--acc-text)">Area admin.</h1>
+  <p class="mu">Admin mengelola pengaduan dan masukan, serta dapat membuka area guru BK dan area siswa.</p>
+  <div class="card">
+    <p><b>Siswa yang masuk</b></p>
+    <div id="listSis"></div>
+  </div>
+  <div class="card">
+    <p><b>Kotak pengaduan dan masukan</b></p>
+    <div id="listAdu"></div>
+  </div>
+</section>
+
+</main>
+<div class="foot" id="foot" hidden>
+  <p>TemanSehat · Prototipe edukasi rekaan untuk demonstrasi.</p>
+  <button class="lnk" data-go="bantuan">Lihat jalur bantuan →</button><button class="lnk" data-go="pengaduan">Kirim pengaduan →</button><button class="lnk" data-go="guru">Area guru BK →</button>
+</div>
+</div>
+<div class="helpbar" id="helpbar" hidden><span>Butuh bicara dengan guru BK?</span><button data-go="bantuan">Jalur bantuan</button></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+var $=function(i){return document.getElementById(i)};
+var role=null, siswaNama="";
+var prog={mod:{},sk:{},kartu:0,jurnal:0};
+var akun={guru:{email:"auliaamaharanii260406@gmail.com",pw:"gurubk111"},admin:{email:"auliaamaharanii260406@gmail.com",pw:"admin111"}};
+var label={siswa:"Siswa",guru:"Guru BK",admin:"Admin"};
+var izin={guru:["guru","admin"],admin:["admin"]};
+var TABS=[["beranda","Beranda"],["modul","Modul"],["latihan","Latihan kasus"],["kartu","Kartu SEHAT"],["jurnal","Jurnal"],["bantuan","Bantuan"],["guru","Dasbor guru","guru"],["admin","Admin","admin"]];
+function toast(m){var t=$("toast");t.textContent=m;t.classList.add("show");setTimeout(function(){t.classList.remove("show")},2200)}
+function buildNav(){ $("nav").innerHTML=TABS.filter(function(t){return !t[2]||role==="admin"||role===t[2]}).map(function(t){return "<button data-go='"+t[0]+"'>"+t[1]+"</button>"}).join(""); }
+function show(id){
+  if(!role) id="masuk";
+  if(izin[id] && izin[id].indexOf(role)<0){ toast(id==="admin"?"Area ini hanya untuk admin.":"Area ini hanya untuk guru BK dan admin."); return; }
+  document.querySelectorAll("section").forEach(function(s){s.classList.toggle("on",s.id===id)});
+  var inn=id!=="masuk";
+  $("nav").hidden=!inn; $("foot").hidden=!inn;
+  document.querySelectorAll("#nav button").forEach(function(b){b.setAttribute("aria-current",b.dataset.go===id?"page":"false")});
+  if(id==="latihan") lat(0);
+  if(id==="beranda") renderProg();
+  if(id==="kartu") prog.kartu=1;
+  $("helpbar").hidden=!(inn && role==="siswa" && id!=="bantuan");
+  if(id==="modul") renderModul();
+  if(id==="jurnal") loadJ();
+  if(id==="guru"||id==="admin") renderAll();
+  window.scrollTo(0,0);
+}
+/* Modul */
+var MOD=[
+ ["Sapa dan Komunikasi","Mulai dengan sapaan sederhana, beri ruang teman menjawab, lalu dengarkan. Perhatikan ekspresi dan nada bicara; bila ragu, tanyakan dengan lembut, jangan berasumsi.","Raka: “Hai, boleh cerita tentang harimu?” · Tari: “Boleh. Makasih sudah mau dengerin.”","Hari ini, sapa satu teman dengan menyebut namanya dan tanyakan kabarnya."],
+ ["Empati","Coba bayangkan perasaan dan sudut pandang temanmu sebelum menanggapi. Menyebut perasaan yang tampak membantu teman merasa dipahami, tanpa perlu langsung memberi saran.","“Kayaknya kamu kecewa banget ya. Mau cerita?”","Saat temanmu bercerita, sebutkan satu perasaan yang kamu tangkap sebelum memberi saran."],
+ ["Hati Terbuka","Terbuka itu secukupnya. Pilih hal yang boleh dibagi dan hal yang perlu dijaga. Kamu berhak menjaga privasimu, dan orang lain pun begitu.","“Aku mau cerita, tapi tolong ini cukup kita berdua ya.”","Tulis dua hal yang boleh kamu bagikan dan satu hal yang ingin kamu jaga untuk dirimu sendiri."],
+ ["Andal dan Saling Percaya","Tepati janji kecil dan jaga cerita pribadi temanmu. Kepercayaan tumbuh dari kebiasaan yang konsisten, bukan dari satu kejadian besar.","“Aku belum bisa datang sekarang, tapi aku kabari jam lima ya.”","Pilih satu janji kecil minggu ini dan tepati."],
+ ["Topang","Dukungan emosional berarti hadir dan menguatkan. Jika temanmu menghadapi hal yang berat atau menyebut ingin menyakiti diri, libatkan orang dewasa tepercaya atau guru BK.","“Aku ada di sini. Mau kita bicara dengan guru BK bareng?”","Tulis satu kalimat dukungan yang nyaman kamu ucapkan, dan nama satu orang dewasa tepercaya."],
+ ["Waspada dan Batas Diri","Perhatikan tanda hubungan yang merugikan: terus dikritik atau diremehkan, rahasia dibocorkan, hanya dihubungi saat dibutuhkan, dipaksa melakukan hal yang tidak nyaman, atau kamu merasa takut dan tertekan. Bahas perilakunya, bukan melabeli orangnya. Sampaikan batasmu, dan cari bantuan bila tidak aman.","“Aku kurang nyaman kalau dikritik di depan teman-teman. Bisa kita bicara berdua saja?”","Latih satu kalimat “aku” untuk menyatakan batas, lalu simpan di jurnal."]
+];
+var mi=0;
+function renderModul(){
+  var m=MOD[mi], n=mi+1, last=mi===MOD.length-1;
+  $("mCard").innerHTML="<p class='eb' style='margin-bottom:8px'>Modul 0"+n+" / 06</p><h2>"+m[0]+"</h2><p class='mu'>"+m[1]+"</p><div class='ex'>"+m[2]+"</div><div class='ex' style='background:var(--p3);color:var(--p3-ink)'><b>Coba sekarang:</b> "+m[3]+"</div>"+
+   "<div class='row'>"+(mi>0?"<button class='btn b2' id='mPrev' style='margin:0'>← Sebelumnya</button>":"")+"<button class='btn b1' id='mNext' style='margin:0'>"+(last?"Lihat Kartu SEHAT →":"Lanjut ke "+MOD[mi+1][0].split(' ')[0]+" →")+"</button></div>";
+  prog.mod[mi]=1;
+  $("mCount").textContent=n+" dari 6";
+  $("mNext").onclick=function(){ if(last) show("kartu"); else {mi++;renderModul();} };
+  if($("mPrev")) $("mPrev").onclick=function(){mi--;renderModul();};
+}
+var tx=null;
+$("mCard").addEventListener("touchstart",function(e){tx=e.touches[0].clientX},{passive:true});
+$("mCard").addEventListener("touchend",function(e){
+  if(tx===null) return; var dx=e.changedTouches[0].clientX-tx; tx=null;
+  if(Math.abs(dx)<60) return;
+  if(dx<0 && mi<MOD.length-1){mi++;renderModul();} else if(dx>0 && mi>0){mi--;renderModul();}
+},{passive:true});
+function renderProg(){
+  var m=Object.keys(prog.mod).length, s=Object.keys(prog.sk).length;
+  var rows=[["Modul dibaca",m+" dari 6",m===6],["Skenario dicoba",s+" dari 6",s===6],["Kartu SEHAT dibuka",prog.kartu?"Sudah":"Belum",!!prog.kartu],["Jurnal disimpan",prog.jurnal?"Sudah":"Belum",!!prog.jurnal]];
+  $("progList").innerHTML=rows.map(function(r){return "<div class='item' style='display:flex;justify-content:space-between;gap:8px'><span>"+(r[2]?"✓ ":"○ ")+r[0]+"</span><b>"+r[1]+"</b></div>"}).join("");
+}
+/* Latihan */
+function lat(n){ ["l0","l1","l2","l3"].forEach(function(id,i){$(id).hidden=i!==n}); }
+var SC=[
+ {t:"Teman yang hanya datang saat butuh",c:"Dani sering mengirim pesan ke Rafi, tetapi hanya ketika ia butuh contekan tugas atau tumpangan. Saat Rafi ingin bercerita, Dani sering tidak membalas.",q:"Apa yang sebaiknya dilakukan Rafi?",o:[
+  ["Terus membantu tanpa bicara apa-apa agar Dani tidak marah","menuruti","Hubungan tetap satu arah dan Rafi bisa merasa dimanfaatkan.","Hubungan yang sehat saling memberi, bukan hanya satu pihak.","mid"],
+  ["Memblokir Dani dan menceritakan kejelekannya ke teman lain","membalas","Masalah membesar dan Dani tidak punya kesempatan memahami perasaan Rafi.","Membicarakan keburukan teman di belakang tidak menyelesaikan masalah.","mid"],
+  ["Bicara berdua dengan tenang memakai pesan “aku”, menyampaikan perasaannya, dan menentukan bantuan apa yang masih mau ia berikan","menegaskan batas","Dani berkesempatan memperbaiki sikap, dan Rafi tetap menjaga dirinya.","Menyampaikan batas dengan tenang membuka ruang untuk hubungan yang lebih seimbang.","ok"]]},
+ {t:"Dikritik di depan teman-teman",c:"Mira sering dikomentari soal penampilan dan nilainya oleh Tia, dan itu dilakukan di depan teman sekelas. Mira jadi kurang percaya diri.",q:"Apa yang sebaiknya dilakukan Mira?",o:[
+  ["Meminta bicara berdua, menyebut perilakunya (“Aku kurang nyaman kalau dikomentari di depan teman”), dan bercerita kepada orang dewasa tepercaya bila terus berlanjut","menegaskan batas","Tia mendapat kesempatan memperbaiki diri, dan Mira tidak menghadapinya sendirian.","Bahas perilakunya, bukan melabeli orangnya, dan libatkan orang dewasa bila perlu.","ok"],
+  ["Mengejek balik Tia di depan semua orang","membalas","Konflik membesar dan suasana kelas makin tidak nyaman.","Beri jeda sebelum membalas.","mid"],
+  ["Menganggap itu salah dirinya dan mulai menyendiri","menarik diri","Rasa percaya diri bisa semakin turun dan dukungan dari teman lain hilang.","Kritik yang meremehkan bukan tanda kekuranganmu; kamu boleh meminta dihargai.","mid"]]},
+ {t:"Cerita yang bocor",c:"Alya menceritakan masalah keluarganya kepada Nisa secara pribadi. Keesokan harinya Alya tahu ceritanya dibicarakan di grup chat teman-teman.",q:"Apa yang sebaiknya dilakukan Alya?",o:[
+  ["Membalas di grup dengan marah dan membuka rahasia Nisa","membalas","Konflik membesar dan dilihat banyak teman; kepercayaan semakin rusak.","Beri jeda sebelum membalas.","mid"],
+  ["Diam, menjauhi semua teman, dan tidak lagi bercerita kepada siapa pun","menarik diri","Masalah tidak selesai dan Alya kehilangan sumber dukungan.","Menarik diri tidak menyelesaikan sumber masalah.","mid"],
+  ["Menenangkan diri, berbicara berdua dengan Nisa memakai pesan “aku”, menegaskan batas cerita pribadi, dan bila perlu meminta bantuan orang dewasa tepercaya atau guru BK","menegaskan batas","Nisa berkesempatan menjelaskan; Alya menyampaikan batas dengan tenang dan mendapat dukungan bila diperlukan.","Kepercayaan dipulihkan melalui komunikasi dan batas yang jelas.","ok"]]},
+ {t:"Ajakan yang tidak nyaman",c:"Beni diajak teman satu kelompoknya melakukan sesuatu yang membuatnya tidak nyaman. Mereka bilang, “Kalau nggak ikut, kamu bukan teman kami.”",q:"Apa yang sebaiknya dilakukan Beni?",o:[
+  ["Ikut saja agar tetap diterima","menuruti","Beni mengorbankan kenyamanannya, dan tekanan seperti ini bisa terulang.","Teman yang menghargai tidak mensyaratkan kamu melakukan hal yang tidak nyaman.","mid"],
+  ["Menolak dengan tegas dan sopan (“Aku nggak mau ikut, tapi aku tetap mau ngobrol bareng yang lain”), lalu bercerita kepada orang dewasa tepercaya atau guru BK bila terus ditekan","menegaskan batas","Beni menjaga dirinya sambil membuka pintu pertemanan, dan ada orang dewasa yang bisa membantu.","Kamu berhak menolak. Menyatakan batas adalah keterampilan, bukan kesalahan.","ok"],
+  ["Pergi tanpa bicara dan memutus semua kontak dengan mereka","menarik diri","Beni aman untuk sementara, tetapi kehilangan kesempatan menyampaikan batas dan mencari dukungan.","Menarik diri tidak menyelesaikan sumber tekanan; mencari dukungan membantu.","mid"]]},
+ {t:"Teman yang sedang menyendiri",c:"Sinta biasanya ceria, tetapi beberapa hari ini ia sering menyendiri dan jarang bicara. Kamu, sahabatnya, melihat perubahan itu.",q:"Apa yang sebaiknya kamu lakukan?",o:[
+  ["Pura-pura tidak tahu agar tidak mengganggu","mengabaikan","Sinta bisa merasa tidak ada yang peduli.","Kehadiran kecil bisa berarti; jangan menunggu temanmu meminta.","mid"],
+  ["Menyapa dengan lembut, menyatakan kamu peduli, mendengarkan tanpa memaksa, dan mengajaknya bicara dengan guru BK bila ia tampak butuh dukungan lebih","mendukung","Sinta merasa diperhatikan dan tahu ke mana ia bisa meminta bantuan lanjutan.","Dukungan berarti hadir dan mendengarkan. Jika temanmu menyebut ingin menyakiti diri, segera beri tahu guru BK atau orang dewasa tepercaya.","ok"],
+  ["Memaksa Sinta bercerita sekarang juga dan menyebarkan kekhawatiranmu ke teman-teman","memaksa","Sinta bisa merasa terdesak dan privasinya terganggu.","Hormati kesiapan teman, dan jaga kekhawatiranmu agar tidak menjadi gosip.","mid"]]},
+ {t:"Minat berbeda dengan sahabat",c:"Nadia dan Putri bersahabat sejak SMP. Kini Nadia ikut ekskul baru dan punya teman baru, sehingga mereka jarang mengobrol. Putri merasa ditinggalkan.",q:"Apa yang sebaiknya dilakukan Putri?",o:[
+  ["Menyindir Nadia di media sosial","membalas","Sindiran memperkeruh hubungan dan membuat Nadia defensif.","Sampaikan perasaan langsung, bukan lewat sindiran.","mid"],
+  ["Diam dan menganggap persahabatan sudah selesai","menarik diri","Kesalahpahaman tidak terselesaikan dan keduanya kehilangan kesempatan bicara.","Perubahan minat tidak otomatis mengakhiri persahabatan.","mid"],
+  ["Mengajak Nadia mengobrol, menyampaikan perasaannya dengan pesan “aku”, dan menyepakati waktu bersama sambil menghargai minat baru Nadia","berkomunikasi terbuka","Nadia memahami perasaan Putri, dan keduanya menemukan cara tetap dekat.","Hubungan bisa bertahan ketika perbedaan dibicarakan dan dihargai.","ok"]]}
+];
+var si=0;
+function renderDaftar(){ $("sList").innerHTML=SC.map(function(s,i){return "<button class='opt' data-sc='"+i+"'><b>Skenario "+(i+1)+"</b> · "+esc(s.t)+(prog.sk[i]?" ✓":"")+"</button>"}).join(""); }
+function openSc(i){
+  si=i; var s=SC[i];
+  $("sCount").textContent="Skenario "+(i+1)+" dari "+SC.length;
+  $("sJudul").textContent=s.t; $("sCerita").textContent=s.c; $("sTanya").textContent=s.q;
+  $("sOpsi").innerHTML=s.o.map(function(o,j){return "<button class='opt' data-pick='"+j+"'>"+"ABC"[j]+". "+esc(o[0])+"</button>"}).join("");
+  lat(1); window.scrollTo(0,0);
+}
+function pick(j){
+  j=parseInt(j,10); var o=SC[si].o[j];
+  $("uPilih").textContent="Kamu memilih "+"ABC"[j]+" pada skenario "+(si+1)+".";
+  $("uJenis").textContent="Respons: "+o[1]; $("uIsi").textContent=o[2]; $("uPel").textContent=o[3]; $("uBox").className="fb "+o[4];
+  prog.sk[si]=1; lat(2); window.scrollTo(0,0);
+}
+function daftar(){ renderDaftar(); lat(3); window.scrollTo(0,0); }
+$("lAman").onclick=daftar;
+$("sDaftar").onclick=daftar; $("sDaftar2").onclick=daftar;
+$("lUlang").onclick=function(){openSc(si)};
+$("sNext").onclick=function(){openSc((si+1)%SC.length)};
+/* Kartu */
+var KARTU_B64="JVBERi0xLjQKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUiAvRjMgNCAwIFIgL0Y0IDUgMCBSCj4+CmVuZG9iagoyIDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhIC9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nIC9OYW1lIC9GMSAvU3VidHlwZSAvVHlwZTEgL1R5cGUgL0ZvbnQKPj4KZW5kb2JqCjMgMCBvYmoKPDwKL0Jhc2VGb250IC9IZWx2ZXRpY2EtQm9sZCAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjIgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iago0IDAgb2JqCjw8Ci9CYXNlRm9udCAvVGltZXMtQm9sZCAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjMgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iago1IDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhLU9ibGlxdWUgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0Y0IC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKNiAwIG9iago8PAovQ29udGVudHMgMTAgMCBSIC9NZWRpYUJveCBbIDAgMCA0MTkuNTI3NiA1OTUuMjc1NiBdIC9QYXJlbnQgOSAwIFIgL1Jlc291cmNlcyA8PAovRm9udCAxIDAgUiAvUHJvY1NldCBbIC9QREYgL1RleHQgL0ltYWdlQiAvSW1hZ2VDIC9JbWFnZUkgXQo+PiAvUm90YXRlIDAgL1RyYW5zIDw8Cgo+PiAKICAvVHlwZSAvUGFnZQo+PgplbmRvYmoKNyAwIG9iago8PAovUGFnZU1vZGUgL1VzZU5vbmUgL1BhZ2VzIDkgMCBSIC9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iago4IDAgb2JqCjw8Ci9BdXRob3IgKEF1bGlhIE1haGFyYW5pKSAvQ3JlYXRpb25EYXRlIChEOjIwMjYxMTE4MDY1OTEzKzAwJzAwJykgL0NyZWF0b3IgKGFub255bW91cykgL0tleXdvcmRzICgpIC9Nb2REYXRlIChEOjIwMjYxMTE4MDY1OTEzKzAwJzAwJykgL1Byb2R1Y2VyIChSZXBvcnRMYWIgUERGIExpYnJhcnkgLSBcKG9wZW5zb3VyY2VcKSkgCiAgL1N1YmplY3QgKHVuc3BlY2lmaWVkKSAvVGl0bGUgKEthcnR1IFNFSEFUIC0gVGVtYW5TZWhhdCkgL1RyYXBwZWQgL0ZhbHNlCj4+CmVuZG9iago5IDAgb2JqCjw8Ci9Db3VudCAxIC9LaWRzIFsgNiAwIFIgXSAvVHlwZSAvUGFnZXMKPj4KZW5kb2JqCjEwIDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDE2NzEKPj4Kc3RyZWFtCkdhdG4maC9EJSsmQVszJT01NzppIktNNWtEJUIiPlYvKUI/JTJvXCZhVTtzZFo9NkhiQT8vI3FxXS4tVyxIY1VJSzQ/JSRjRlcnK21gNEBNNWBRckdybStidVd0Tzk9K0AlPz5oZ2szVDZocSVrYj1QYEpjM1QzLEAuayxHTCIpOE8/VmBfXGJYbXAnV1sqQmVBNWlqQUkwSk5iVHFcOTUoUWBATSJbUDtnOnVNIjdjR2wzJ0g5bzY9J08iRypPalspP2tAX3Jea2FcR0YzJDdgY21zUlNZZmU4K3EmOUA1MGZ0czZMcVhgaCtwWF5LPzk3UjZzJ3U4WVcwQkpQa2szYS5qczdrZE5vKUBjJ1BgSllUZ0RiSj1KSDxzXSJBQmpxY1dFI1JDXGxpZWNAMDRMQHBKKUs3YUhvIygxYU0uXF5GbWkoaFBeWiVKSSVFOEAhYkE5bCItOEZgbDBgQWQ6XTQpalxpT2gvIzZebnBYWkpWREI1VFMkJUtHMi9PLDUyKE8oLV4vUWFaP15pQjhJM1ZAKUtpKUU1KCooKSdPY3IsQ11NLCskbVxBQ0YtY0lrajM8dTY1VlI+UiUyO0tXVGE3M3VfRj0lOzsxPExHamczMmlNaWsrdDI3JkRpPSxPMDdobUo/P2gnJ0pwQ2xdcCdzckxIWkUqSzJPdUklMidOKE1DbT9OJi5ATDNsWmw2VHRYPT9vST5NWW0kLEZKanIuYSI9PmgqI0YzTidRaCUhX3MxdSUuXThlO1c4RTM9MkBOL2xQZFw3QiVPLTlEOipTUDpCTkhsYz1jWiMlWS4maCEqIkAjY1kmSVZGUiFkbGpKOUs1JVlJZCRvPkBNJTc6OzdsbV85MEJvLVRiYj8yV0ZFajNiXmhfXTBcKk42YyJackIwQmM2OGxFQyowV1RpWE5BcCVNRUg4Oz1NXltyJSlob2leUCNNbzlZSjB0VDREQD1vKzxwdGFJLVpTOE4hX0pCXERocjstZGsvLltZbC9vRiNcNUk+UyU/LUwoInQmbUMpT1E+LTNmRl5qSyQ8QjRDWVEsJzQ0OnBjK1VzWitdNy05dWkrOklpWUZZTjouTGNZODc4I2F0b10lckc/c0ciRE9UZUVJNTk2J1BiWTU3OixsS1NfJVIiWC9mcnVHUz07ITdFZEY6XVloZ0VLMEY6JjFOJ2FZJUNsTjdLLSZiZy9bLVBRXCQsPm0zVV1qNCwvUSxOYi08NXQrTU4iWlBNYl4vQlk7aCVUQCEvIWZXTkJ0Mz4tTyFIczI+ZSlyakQqSkZqKFtyKHE9QyMyWVtOQmo7SiIjX0BhSTdySFEkS3Joczs8cztfcFdJJERMRUhXJyNgYmBAVyhMLjI2KiM7dCUtXWZcN0Y/YU9NRkpHcyRWbzMvLDVtWEIvXmlwJU5xVidVN1pNKjcicnE6JFF1NmBfcCo3KTFhb0w0ZipGRUQkJXFkLlVeSEhyPGImS3JRXjtPXWZkViZlSXJ1RyNVVDI9THVkaTRwTWJAWWNrP0IuI1IvXUA5XiInci09YmRQQTFObkQvL0tMbVlwLWhcQTtbRWU2PU4uc0EzcEgoNiYmQilrS0xAR2hSX0xXJ24pL1UuTlAvLiQ5IWB1N0xAVm1TZk5gXkI6aF5zTTEjXlBtcW1fOC0jbztIKDZiQiVuSVhdQ0xiJ1AzQS5iRlpNPnMlM2BsdUpQJzZAZnAwUTZlKG0wMkBXQT9OaEFjJXM/OXBvM1M5U1ciajBuPzIkbT0+X1dQTF1iKU1iQC8mQFpySz8/TkdDUGAicmVRVk1LPls5YGRZOzQ7XCFedW91NSlePT83LFAlQCpSLS9uXGVtIyolT11hPl4/OEFvPG9CJU4/NHQ/XlstOlU2KyY7UHRVb0stWjg8IV1SWElDPCI8Y2AkKGs3O3M2QGtyZVtxX3VeMFY4XEBHcjcqbUk1XiE1anBYQ0lPcSspTDlsOnNETUpHXVRjYDRYKDovaDtvbEBgJE1bTlZxO3IiImliPiU2XF4sLVxhckYnW0gpIi5LKzM6J25qZis1UkoqPWsqOlhkIzt0PkBBYjQ3ZmJgYl8nczw2cTc8VzhOVk5iLDVwK3NEQENMVllaKFpRYjtHYm9yO0ooXUJqSWtsUU1kcD49RDU2WCQ7VSQtXydwXWVUM1xKNUE0Qy5II1xhSG5rNDhka2huMF49MjJxPyZlbSc+KFhASWJMLjhEJE5+PmVuZHN0cmVhbQplbmRvYmoKeHJlZgowIDExCjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDA2MSAwMDAwMCBuIAowMDAwMDAwMTIyIDAwMDAwIG4gCjAwMDAwMDAyMjkgMDAwMDAgbiAKMDAwMDAwMDM0MSAwMDAwMCBuIAowMDAwMDAwNDQ5IDAwMDAwIG4gCjAwMDAwMDA1NjQgMDAwMDAgbiAKMDAwMDAwMDc2OCAwMDAwMCBuIAowMDAwMDAwODM2IDAwMDAwIG4gCjAwMDAwMDExMTggMDAwMDAgbiAKMDAwMDAwMTE3NyAwMDAwMCBuIAp0cmFpbGVyCjw8Ci9JRCAKWzw1YzdjZDA3NmM4NzJmNDlhOWM1NTQwMzEzYzAzZWU3MD48NWM3Y2QwNzZjODcyZjQ5YTljNTU0MDMxM2MwM2VlNzA+XQolIFJlcG9ydExhYiBnZW5lcmF0ZWQgUERGIGRvY3VtZW50IC0tIGRpZ2VzdCAob3BlbnNvdXJjZSkKCi9JbmZvIDggMCBSCi9Sb290IDcgMCBSCi9TaXplIDExCj4+CnN0YXJ0eHJlZgoyOTQwCiUlRU9GCg==";
+$("unduh").onclick=async function(){
+  try{
+    var d=window.claude?await claude.use("downloads"):null;
+    if(!d){ toast("Unduhan tidak tersedia di tampilan ini. Gunakan tombol cetak."); return; }
+    var bin=atob(KARTU_B64), arr=new Uint8Array(bin.length);
+    for(var i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
+    await d.save({filename:"Kartu_SEHAT_TemanSehat.pdf",data:new Blob([arr],{type:"application/pdf"})});
+    toast("Kartu SEHAT diunduh");
+  }catch(e){ if(e&&e.code==="declined") return; toast("Unduhan tidak berhasil. Coba tombol cetak."); }
+};
+$("cetak").onclick=function(){ try{ window.print(); }catch(e){ toast("Gunakan menu cetak di peramban"); } };
+/* Jurnal */
+var JK="temansehat_jurnal";
+function loadJ(){ var d=["","",""]; try{ var v=localStorage.getItem(JK); if(v) d=JSON.parse(v); }catch(e){} ["j1","j2","j3"].forEach(function(id,i){$(id).value=d[i]||""}); }
+$("jSimpan").onclick=function(){ try{ localStorage.setItem(JK,JSON.stringify([$("j1").value,$("j2").value,$("j3").value])); prog.jurnal=1; toast("Jurnal tersimpan di perangkatmu"); }catch(e){ toast("Penyimpanan tidak tersedia di perangkat ini"); } };
+$("jHapus").onclick=function(){ ["j1","j2","j3"].forEach(function(id){$(id).value=""}); try{ localStorage.removeItem(JK); }catch(e){} toast("Jurnal dihapus"); };
+/* Data guru / admin */
+var KEY={pend:"temansehat_pend",adu:"temansehat_adu",sis:"temansehat_sis"}, mem={pend:null,adu:null,sis:null};
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function getList(k){
+  if(mem[k]) return mem[k];
+  var d=null;
+  try{ var v=localStorage.getItem(KEY[k]); if(v) d=JSON.parse(v); }catch(e){}
+  if(!d) d=(k==="pend")?[
+    {id:1,nama:"Dimas",kelas:"Kelas XI",topik:"Pertemanan",jadwal:"Saat jam istirahat",status:"Baru",dummy:1},
+    {id:2,nama:"Salsa",kelas:"Kelas XII",topik:"Konflik dengan teman",jadwal:"Pulang sekolah",status:"Baru",dummy:1}]:[];
+  mem[k]=d; return d;
+}
+function saveList(k){ try{ localStorage.setItem(KEY[k],JSON.stringify(mem[k])); }catch(e){} }
+function addItem(k,o){ var l=getList(k); o.id=Date.now(); o.status="Baru"; l.unshift(o); saveList(k); }
+function renderList(k){
+  var box=$({pend:"listPend",adu:"listAdu",sis:"listSis"}[k]), list=getList(k);
+  if(!list.length){ box.innerHTML="<p class='sm' style='margin:0'>Belum ada data.</p>"; return; }
+  box.innerHTML=list.map(function(it){
+    var isi=(k==="sis")?"<b>"+esc(it.nama)+"</b><br><span class='sm'>"+esc(it.email)+" · "+esc(it.waktu)+"</span>":(k==="pend")?"<b>"+esc(it.nama)+"</b>, "+esc(it.kelas)+"<br><span class='sm'>Topik: "+esc(it.topik)+" · Waktu: "+esc(it.jadwal)+"</span>":"<b>"+esc(it.jenis)+"</b><br>"+esc(it.isi);
+    var at=" data-k='"+k+"' data-id='"+it.id+"'";
+    return "<div class='item'>"+isi+"<br><span class='sm'>"+esc(it.status)+(it.dummy?" · data dummy":"")+"</span><div class='row' style='margin-top:8px'>"+
+      (it.status==="Baru"?"<button class='btn b1' style='margin:0;padding:10px' data-act='terima'"+at+">Terima</button>":"")+
+      "<button class='btn bd' style='margin:0;padding:10px' data-act='hapus'"+at+">Hapus</button></div></div>";
+  }).join("");
+}
+function renderAll(){ renderList("pend"); renderList("adu"); renderList("sis"); }
+document.addEventListener("click",function(e){
+  var p=e.target.closest("[data-pick]"); if(p){ pick(p.dataset.pick); return; }
+  var sc=e.target.closest("[data-sc]"); if(sc){ openSc(Number(sc.dataset.sc)); return; }
+  var g=e.target.closest("[data-go]"); if(g){ show(g.dataset.go); return; }
+  var b=e.target.closest("[data-act]"); if(!b) return;
+  var k=b.dataset.k, id=Number(b.dataset.id), list=getList(k);
+  if(b.dataset.act==="terima"){ list.forEach(function(it){ if(it.id===id) it.status="Diterima"; }); saveList(k); renderList(k); toast("Diterima"); }
+  else if(b.dataset.act==="hapus"){ b.dataset.act="hapus2"; b.textContent="Yakin hapus?"; }
+  else { mem[k]=list.filter(function(it){return it.id!==id}); saveList(k); renderList(k); toast("Dihapus"); }
+});
+$("pKirim").onclick=function(){
+  var t=$("pIsi").value.trim();
+  if(t.length<5){ $("pErr").textContent="Tulis pesan minimal beberapa kata."; return; }
+  addItem("adu",{jenis:$("pJenis").value,isi:t});
+  $("pIsi").value=""; $("pErr").textContent=""; toast("Pengaduan terkirim"); show("beranda");
+};
+$("kirim").onclick=function(){
+  addItem("pend",{nama:$("fNama").value.trim()||"Tanpa nama",kelas:$("fKelas").value,topik:$("fTopik").value,jadwal:$("fJadwal").value});
+  $("fNama").value=""; $("fOk").textContent="Permintaan terkirim ke guru BK (demo)."; toast("Permintaan terkirim");
+};
+/* Masuk */
+var tab="siswa";
+function setTab(r){
+  tab=r;
+  document.querySelectorAll(".tab").forEach(function(b){b.setAttribute("aria-selected",b.dataset.tab===r?"true":"false")});
+  $("pSiswa").hidden=r!=="siswa"; $("pAkun").hidden=r==="siswa";
+  $("lErr").textContent=""; $("lEmail").value=""; $("lPw").value=""; $("lPw").type="password"; $("lLihat").checked=false;
+  $("sNama").value=""; $("sEmail").value=""; $("sSetuju").checked=false; $("sErr").textContent="";
+  if(r!=="siswa") $("lHint").textContent="Masuk dengan Gmail dan kata sandi "+label[r]+" yang terdaftar.";
+}
+function masuk(r){
+  prog={mod:{},sk:{},kartu:0,jurnal:0}; role=r; $("peran").textContent=label[r]; $("keluar").hidden=false; buildNav();
+  if(r==="siswa") $("fNama").value=siswaNama||"";
+  $("lEmail").value=""; $("lPw").value="";
+  show(r==="siswa"?"beranda":r);
+}
+document.querySelectorAll(".tab").forEach(function(b){b.onclick=function(){setTab(b.dataset.tab)}});
+$("lSiswa").onclick=function(){
+  var n=$("sNama").value.trim(), e=$("sEmail").value.trim().toLowerCase(), er=$("sErr");
+  if(n.length<2){er.textContent="Isi namamu terlebih dahulu.";return;}
+  if(!/^[^@\s]+@gmail\.com$/.test(e)){er.textContent="Masukkan alamat Gmail yang valid, misalnya nama@gmail.com.";return;}
+  if(!$("sSetuju").checked){er.textContent="Centang persetujuan terlebih dahulu.";return;}
+  er.textContent="";
+  var w=new Date().toLocaleString("id-ID"), ex=getList("sis").filter(function(x){return x.email===e})[0];
+  if(ex){ ex.nama=n; ex.waktu=w; saveList("sis"); } else addItem("sis",{nama:n,email:e,waktu:w});
+  siswaNama=n; masuk("siswa");
+};
+$("lLihat").onchange=function(){ $("lPw").type=this.checked?"text":"password"; };
+$("lMasuk").onclick=function(){
+  var e=$("lEmail").value.trim().toLowerCase(), p=$("lPw").value.trim(), er=$("lErr");
+  if(!/^[^@\s]+@gmail\.com$/.test(e)){er.textContent="Masukkan alamat Gmail yang valid, misalnya nama@gmail.com.";return;}
+  if(!p){er.textContent="Kata sandi belum diisi.";return;}
+  if(e!==akun[tab].email){er.textContent="Gmail tidak terdaftar sebagai "+label[tab]+". Periksa penulisannya.";return;}
+  var r=null; if(p===akun[tab].pw) r=tab; else if(tab==="guru" && p===akun.admin.pw) r="admin";
+  if(!r){er.textContent="Kata sandi salah. Periksa huruf besar dan kecil.";return;}
+  masuk(r);
+};
+$("keluar").onclick=function(){
+  role=null; $("peran").textContent=""; $("keluar").hidden=true; setTab("siswa"); show("masuk");
+};
+setTab("siswa"); show("masuk");
+</script>
+</body>
+</html>
