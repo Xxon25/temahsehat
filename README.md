@@ -1,97 +1,58 @@
-# 🤝 TemanSehat — Ruang Belajar Pertemanan Sehat & Bimbingan Konseling
+# 🤝 TemanSehat — Platform Psikoedukasi Pertemanan Remaja & Bimbingan Konseling Digital (Next.js + Supabase)
 
-Aplikasi web modern, cerah, ringan, dan cepat untuk edukasi pertemanan sehat remaja sekolah dan portal bimbingan konseling (BK). Siap dipublikasikan ke **Vercel** dengan backend database **Supabase**.
-
----
-
-## 🌟 Fitur Utama
-
-- 🎨 **Tampilan Baru & Segar (Cerah):** Palet warna modern (Fresh Sky Azure, Mint Emerald, Sunny Amber), ramah untuk remaja & pendidik, bersih dan tidak berat.
-- ⚡ **Ringan & Super Cepat:** Zero-bloat, tanpa dependensi berat, langsung jalan instan di browser dan mobile.
-- 👥 **3 Role Terintegrasi:**
-  1. **Siswa:** Belajar 6 Modul SEHAT interaktif, latihan 6 skenario kasus dunia nyata dengan ulasan psikologis langsung, Kartu SEHAT (unduh/cetak), jurnal refleksi pribadi, ajukan konseling ke Guru BK, dan kirim aspirasi/pengaduan.
-  2. **Guru BK:** Dasbor pelayanan konseling, pantau statistik permintaan bimbingan siswa, atur jadwal temu, beri catatan tindak lanjut, dan monitor daftar siswa aktif.
-  3. **Admin (Full Control):** Kendali penuh sistem! Manajemen pengguna & ubah hak akses role (`siswa` ⇄ `guru` ⇄ `admin`) secara instan, kelola kotak pengaduan/masukan, pantau seluruh sesi konseling, serta integrasi database Supabase.
-- 🗄️ **Database Supabase Ready:** Skema database lengkap dengan PostgreSQL, Row Level Security (RLS), dan otomatis fallback ke *Mode Demo / Lokal* jika kredensial belum diisi (tanpa pernah error/layar putih).
+Aplikasi web profesional berbasis **Next.js (App Router)**, **Tailwind CSS**, dan **Supabase** dengan tema warna cerah modern. Dirancang untuk edukasi pertemanan sehat remaja sekolah dan pelayanan Bimbingan Konseling (BK) yang siap dipublikasikan langsung ke **Vercel**.
 
 ---
 
-## 🚀 Panduan Publikasi ke Vercel
+## 🌟 Keunggulan & Fitur Utama
 
-Aplikasi ini sudah dilengkapi file konfigurasi `vercel.json` dan struktur statis yang dioptimalkan untuk Vercel.
+1. **⚡ Framework Next.js + Tailwind CSS (Native Vercel Ready):**
+   - Tampilan profesional, widescreen dashboard dengan sidebar interaktif, kartu KPI modern, dan desain cerah (Fresh Sky, Cyan, Mint Emerald, Sunny Amber).
+   - Sangat ringan, responsif di desktop maupun smartphone.
 
-### Cara 1: Lewat Dashboard Vercel (GitHub Integration)
-1. Push repositori ini ke akun GitHub Anda:
-   ```bash
-   git add -A
-   git commit -m "feat: inisialisasi temansehat ready to publish vercel"
-   git push origin main
-   ```
-2. Buka [Vercel Dashboard](https://vercel.com/dashboard) dan klik **Add New... > Project**.
-3. Hubungkan repositori GitHub Anda.
-4. Pada bagian **Build & Development Settings**, biarkan default (Framework Preset: *Other*).
-5. (Opsional) Tambahkan Environment Variables:
-   - `SUPABASE_URL`: `https://your-project.supabase.co`
-   - `SUPABASE_ANON_KEY`: `your-anon-key`
-6. Klik **Deploy**! Website Anda akan live dalam beberapa detik.
+2. **👥 3 Role Terintegrasi + Ganti Peran Instan (1-Klik Demo):**
+   - **🎒 Siswa:**
+     - **Dashboard Siswa:** Statistik capaian belajar, peta perjalanan belajar, dan pantauan status pengajuan konseling BK secara langsung.
+     - **6 Modul Psikoedukasi SEHAT:** Penjelasan lengkap, poin kunci, simulasi percakapan bentuk *chat bubble*, dan tantangan praktik harian.
+     - **6 Simulasi Kasus (Roleplay):** Studi kasus nyata dengan evaluasi psikologis langsung (*Asertif vs Pasif vs Agresif*).
+     - **Kartu Pedoman SEHAT:** Poster satu halaman siap cetak / simpan PDF.
+     - **Jurnal Refleksi Pribadi:** Ruang aman menyusun *I-Message (Pesan Aku)* yang tersimpan ke database.
+     - **Konseling Guru BK & Kotak Aspirasi:** Formulir pengajuan janji temu BK beserta tabel riwayat balasan dari Guru BK dan Admin.
+   - **🎓 Guru BK:**
+     - **Portal Pelayanan Konseling:** 4 Kartu KPI, filter status (*Menunggu, Dijadwalkan, Selesai*), pencarian siswa, serta editor langsung untuk menjadwalkan pertemuan & memberi catatan ruang konseling.
+     - **Direktori Siswa Terdaftar:** Pantau daftar siswa aktif dan kelasnya.
+   - **👑 Admin (Full Control / Superuser):**
+     - **Manajemen Pengguna & Hak Akses:** Tambah akun pengguna baru, hapus akun, dan **ubah role siapa pun secara instan** (`Siswa` ⇄ `Guru BK` ⇄ `Admin`).
+     - **Kontrol Seluruh Konseling BK:** Pantau dan ubah status seluruh jadwal konseling.
+     - **Manajemen Pengaduan & Masukan:** Berikan tanggapan resmi Admin dan perbarui status laporan.
+     - **CMS Kurikulum Modul:** Tambah modul pembelajaran baru secara dinamis dari dashboard Admin!
 
-### Cara 2: Lewat Vercel CLI
+3. **🗄️ Database Supabase + Fail-Safe Local Fallback:**
+   - Skema SQL lengkap di `supabase/migrations/20261120000000_init_temansehat.sql`.
+   - Mendukung konfigurasi via `.env.local` (`NEXT_PUBLIC_SUPABASE_URL` & `NEXT_PUBLIC_SUPABASE_ANON_KEY`) maupun langsung melalui tombol **Konfigurasi Database Supabase** di dalam web.
+
+---
+
+## 🚀 Cara Menjalankan di Lokal
+
 ```bash
-npm i -g vercel
-vercel
+# 1. Install dependencies
+npm install
+
+# 2. Jalankan server development Next.js (Port 3005)
+npm run dev
 ```
+
+Buka **[http://localhost:3005](http://localhost:3005)** di browser Anda.
 
 ---
 
-## 🗄️ Panduan Setup Supabase Database
+## 🌐 Cara Deploy ke Vercel
 
-1. Buka [Supabase Dashboard](https://supabase.com/dashboard) dan buat proyek baru.
-2. Buka menu **SQL Editor** di sisi kiri.
-3. Buka file `supabase/migrations/20261120000000_init_temansehat.sql` pada proyek ini, copy seluruh kodenya, lalu paste di SQL Editor Supabase dan klik **Run**.
-4. Semua tabel (`profiles`, `pendampingan`, `pengaduan`, `jurnal`, `modul_progress`) serta data awal langsung dibuat.
-5. Masuk ke menu **Project Settings > API**:
-   - Salin **Project URL**
-   - Salin **Project API Anon Key**
-6. Hubungkan ke aplikasi web:
-   - **Lewat Tampilan Web:** Buka web TemanSehat, klik tombol **Mode Demo / Lokal** atau tombol **⚙️ DB** di pojok kanan atas, masukkan URL & Anon Key, lalu klik Simpan.
-   - **Atau lewat kode:** Buka `js/config.js` dan isi `SUPABASE_URL` serta `SUPABASE_ANON_KEY`.
-
----
-
-## 🔑 Akun Uji Coba / Demo
-
-| Peran (Role) | Email | Kata Sandi | Hak Akses |
-| :--- | :--- | :--- | :--- |
-| **🎒 Siswa** | Masukkan nama & email bebas | Tanpa password | Modul, Skenario, Kartu SEHAT, Jurnal, Ajukan BK |
-| **🎓 Guru BK** | `gurubk@temansehat.id` | `gurubk123` | Manajemen Konseling Siswa & Jadwal Temu BK |
-| **👑 Admin** | `admin@temansehat.id` | `admin123` | Kontrol Penuh User, Role, Pengaduan & Sistem |
-
-*(Catatan: Akun prototipe lama `auliaamaharanii260406@gmail.com` juga tetap dapat digunakan).*
-
----
-
-## 📂 Struktur Proyek
-
-```
-teman-sehat/
-├── index.html                   # Halaman web utama responsif & cerah
-├── css/
-│   └── style.css                # Desain tema cerah, segar, kartu modern, tombol kontras
-├── js/
-│   ├── config.js                # Konfigurasi Supabase URL & kredensial
-│   ├── data.js                  # Konten 6 Modul SEHAT & 6 Skenario interaktif
-│   ├── supabaseClient.js        # Data layer Supabase + LocalStorage Fallback (Fail-Fast)
-│   └── app.js                   # Kontroler 3 Role (Siswa, Guru, Admin)
-├── supabase/
-│   └── migrations/
-│       └── 20261120000000_init_temansehat.sql  # Skema SQL, RLS, dan seed data
-├── scripts/
-│   ├── push.sh                  # Skrip protokol auto git push
-│   └── deploy.sh                # Skrip protokol deploy Vercel + Supabase
-├── .github/
-│   └── workflows/
-│       └── deploy.yml           # CI/CD otomatis GitHub Actions
-├── vercel.json                  # Konfigurasi routing & keamanan Vercel
-├── .env.example                 # Template environment variables
-└── README.md                    # Dokumentasi lengkap
-```
+1. Push repositori ini ke GitHub.
+2. Buka [Vercel Dashboard](https://vercel.com/new) dan import repositori ini.
+3. Vercel otomatis mendeteksi **Next.js**.
+4. Tambahkan Environment Variables di Vercel:
+   - `NEXT_PUBLIC_SUPABASE_URL` = URL proyek Supabase Anda
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = Anon Public Key Supabase Anda
+5. Klik **Deploy**!
