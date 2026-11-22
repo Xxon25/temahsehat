@@ -1,8 +1,10 @@
 -- supabase/migrations/20261120000000_init_temansehat.sql
--- Deskripsi: Inisialisasi skema database TemanSehat (Profiles, Pendampingan BK, Pengaduan/Masukan, Jurnal Refleksi, Modul Progress)
+-- Deskripsi: Inisialisasi skema database TemanSehat lengkap dengan GRANT privileges & RLS
 
--- ── 1. EXTENSIONS ─────────────────────────────────────────────
+-- ── 1. EXTENSIONS & SCHEMA GRANTS ─────────────────────────────
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+GRANT USAGE ON SCHEMA public TO postgres, anon, authenticated, service_role;
 
 -- ── 2. TABEL PROFILES (PENGGUNA: SISWA, GURU BK, ADMIN) ──────
 CREATE TABLE IF NOT EXISTS public.profiles (
@@ -16,28 +18,20 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   last_active    TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 
--- RLS untuk profiles
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Semua orang dapat membaca profil publik"
-  ON public.profiles
-  FOR SELECT
-  USING (true);
+DROP POLICY IF EXISTS "Semua orang dapat membaca profil publik" ON public.profiles;
+DROP POLICY IF EXISTS "Pengguna dapat mengedit profil mereka sendiri" ON public.profiles;
+DROP POLICY IF EXISTS "Semua orang dapat mendaftarkan profil baru" ON public.profiles;
+DROP POLICY IF EXISTS "Admin dapat menghapus profil" ON public.profiles;
+DROP POLICY IF EXISTS "Public profiles access" ON public.profiles;
 
-CREATE POLICY "Pengguna dapat mengedit profil mereka sendiri"
+CREATE POLICY "Public profiles access"
   ON public.profiles
-  FOR UPDATE
-  USING (auth.uid() = id OR true);
-
-CREATE POLICY "Semua orang dapat mendaftarkan profil baru"
-  ON public.profiles
-  FOR INSERT
+  FOR ALL
+  TO anon, authenticated, service_role
+  USING (true)
   WITH CHECK (true);
-
-CREATE POLICY "Admin dapat menghapus profil"
-  ON public.profiles
-  FOR DELETE
-  USING (true);
 
 -- ── 3. TABEL PERMINTAAN PENDAMPINGAN BK ──────────────────────
 CREATE TABLE IF NOT EXISTS public.pendampingan (
@@ -52,28 +46,20 @@ CREATE TABLE IF NOT EXISTS public.pendampingan (
   kontak_siswa       TEXT DEFAULT ''
 );
 
--- RLS untuk pendampingan
 ALTER TABLE public.pendampingan ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Siapapun dapat membuat permintaan pendampingan"
+DROP POLICY IF EXISTS "Siapapun dapat membuat permintaan pendampingan" ON public.pendampingan;
+DROP POLICY IF EXISTS "Siswa, Guru, dan Admin dapat melihat daftar pendampingan" ON public.pendampingan;
+DROP POLICY IF EXISTS "Guru dan Admin dapat memperbarui status pendampingan" ON public.pendampingan;
+DROP POLICY IF EXISTS "Guru dan Admin dapat menghapus pendampingan" ON public.pendampingan;
+DROP POLICY IF EXISTS "Public pendampingan access" ON public.pendampingan;
+
+CREATE POLICY "Public pendampingan access"
   ON public.pendampingan
-  FOR INSERT
+  FOR ALL
+  TO anon, authenticated, service_role
+  USING (true)
   WITH CHECK (true);
-
-CREATE POLICY "Siswa, Guru, dan Admin dapat melihat daftar pendampingan"
-  ON public.pendampingan
-  FOR SELECT
-  USING (true);
-
-CREATE POLICY "Guru dan Admin dapat memperbarui status pendampingan"
-  ON public.pendampingan
-  FOR UPDATE
-  USING (true);
-
-CREATE POLICY "Guru dan Admin dapat menghapus pendampingan"
-  ON public.pendampingan
-  FOR DELETE
-  USING (true);
 
 -- ── 4. TABEL PENGADUAN & MASUKAN ADMIN ────────────────────────
 CREATE TABLE IF NOT EXISTS public.pengaduan (
@@ -86,47 +72,43 @@ CREATE TABLE IF NOT EXISTS public.pengaduan (
   pengirim_anonim  BOOLEAN DEFAULT true
 );
 
--- RLS untuk pengaduan
 ALTER TABLE public.pengaduan ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Siapapun dapat mengirim pengaduan"
+DROP POLICY IF EXISTS "Siapapun dapat mengirim pengaduan" ON public.pengaduan;
+DROP POLICY IF EXISTS "Pengguna dan Admin dapat melihat pengaduan" ON public.pengaduan;
+DROP POLICY IF EXISTS "Admin dapat memperbarui pengaduan" ON public.pengaduan;
+DROP POLICY IF EXISTS "Admin dapat menghapus pengaduan" ON public.pengaduan;
+DROP POLICY IF EXISTS "Public pengaduan access" ON public.pengaduan;
+
+CREATE POLICY "Public pengaduan access"
   ON public.pengaduan
-  FOR INSERT
+  FOR ALL
+  TO anon, authenticated, service_role
+  USING (true)
   WITH CHECK (true);
-
-CREATE POLICY "Pengguna dan Admin dapat melihat pengaduan"
-  ON public.pengaduan
-  FOR SELECT
-  USING (true);
-
-CREATE POLICY "Admin dapat memperbarui pengaduan"
-  ON public.pengaduan
-  FOR UPDATE
-  USING (true);
-
-CREATE POLICY "Admin dapat menghapus pengaduan"
-  ON public.pengaduan
-  FOR DELETE
-  USING (true);
 
 -- ── 5. TABEL JURNAL REFLEKSI SISWA ────────────────────────────
 CREATE TABLE IF NOT EXISTS public.jurnal (
   id            UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   created_at    TIMESTAMPTZ DEFAULT NOW() NOT NULL,
-  email_siswa   TEXT NOT NULL,
+  email_siswa   TEXT UNIQUE NOT NULL,
   q1_perasaan   TEXT DEFAULT '',
   q2_hal_dijaga TEXT DEFAULT '',
   q3_pesan_aku  TEXT DEFAULT '',
   updated_at    TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 
--- RLS untuk jurnal
 ALTER TABLE public.jurnal ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Pengguna dapat mengelola jurnal mereka"
+DROP POLICY IF EXISTS "Pengguna dapat mengelola jurnal mereka" ON public.jurnal;
+DROP POLICY IF EXISTS "Public jurnal access" ON public.jurnal;
+
+CREATE POLICY "Public jurnal access"
   ON public.jurnal
   FOR ALL
-  USING (true);
+  TO anon, authenticated, service_role
+  USING (true)
+  WITH CHECK (true);
 
 -- ── 6. TABEL PROGRES BELAJAR SISWA ────────────────────────────
 CREATE TABLE IF NOT EXISTS public.modul_progress (
@@ -139,45 +121,42 @@ CREATE TABLE IF NOT EXISTS public.modul_progress (
   updated_at        TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 
--- RLS untuk progres
 ALTER TABLE public.modul_progress ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Pengguna dapat mengelola progres belajar mereka"
+DROP POLICY IF EXISTS "Pengguna dapat mengelola progres belajar mereka" ON public.modul_progress;
+DROP POLICY IF EXISTS "Public progress access" ON public.modul_progress;
+
+CREATE POLICY "Public progress access"
   ON public.modul_progress
   FOR ALL
-  USING (true);
+  TO anon, authenticated, service_role
+  USING (true)
+  WITH CHECK (true);
 
--- ── 7. SEED DATA AWAL ─────────────────────────────────────────
--- Akun Admin default
-INSERT INTO public.profiles (email, nama, role, password_hash)
+-- ── 7. GRANT TABLE PRIVILEGES KE ANON, AUTHENTICATED, SERVICE_ROLE ──
+GRANT ALL ON TABLE public.profiles TO postgres, anon, authenticated, service_role;
+GRANT ALL ON TABLE public.pendampingan TO postgres, anon, authenticated, service_role;
+GRANT ALL ON TABLE public.pengaduan TO postgres, anon, authenticated, service_role;
+GRANT ALL ON TABLE public.jurnal TO postgres, anon, authenticated, service_role;
+GRANT ALL ON TABLE public.modul_progress TO postgres, anon, authenticated, service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO postgres, anon, authenticated, service_role;
+
+-- ── 8. SEED DATA AWAL ─────────────────────────────────────────
+INSERT INTO public.profiles (email, nama, role, kelas, password_hash)
 VALUES 
-  ('admin@temansehat.id', 'Administrator TemanSehat', 'admin', 'admin123'),
-  ('auliaamaharanii260406@gmail.com', 'Aulia Maharani (Admin)', 'admin', 'admin111')
-ON CONFLICT (email) DO UPDATE SET role = EXCLUDED.role;
+  ('admin@temansehat.id', 'Dr. Hendra Wijaya (Admin Utama)', 'admin', 'Administrator', 'admin123'),
+  ('auliaamaharanii260406@gmail.com', 'Aulia Maharani (Admin)', 'admin', 'Administrator', 'admin111'),
+  ('gurubk@temansehat.id', 'Ibu Rahmawati, S.Pd., Kons.', 'guru', 'Koordinator BK', 'gurubk123'),
+  ('dimas@sekolah.id', 'Dimas Prasetyo', 'siswa', 'Kelas XI MIPA 2', NULL),
+  ('salsa@sekolah.id', 'Salsa Nabila Putri', 'siswa', 'Kelas XII IPS 1', NULL)
+ON CONFLICT (email) DO UPDATE SET role = EXCLUDED.role, nama = EXCLUDED.nama;
 
--- Akun Guru BK default
-INSERT INTO public.profiles (email, nama, role, password_hash)
+INSERT INTO public.pendampingan (nama_siswa, kelas, topik, jadwal_preferensi, status, catatan_guru, kontak_siswa)
 VALUES 
-  ('gurubk@temansehat.id', 'Ibu Rahmawati, S.Pd (Guru BK)', 'guru', 'gurubk123')
-ON CONFLICT (email) DO UPDATE SET role = EXCLUDED.role;
+  ('Dimas Prasetyo', 'Kelas XI MIPA 2', 'Menegaskan Batasan Diri (Asertif)', 'Saat jam istirahat pertama (09.45 WIB)', 'Menunggu', '', 'dimas@sekolah.id'),
+  ('Salsa Nabila Putri', 'Kelas XII IPS 1', 'Konflik dengan Teman Sebaya', 'Sepulang sekolah (15.00 WIB)', 'Dijadwalkan', 'Silakan temui Ibu di Ruang BK Lantai 2 pukul 15.00 WIB.', 'salsa@sekolah.id');
 
--- Contoh Siswa default
-INSERT INTO public.profiles (email, nama, role, kelas)
-VALUES 
-  ('dimas@sekolah.id', 'Dimas Prasetyo', 'siswa', 'Kelas XI'),
-  ('salsa@sekolah.id', 'Salsa Nabila', 'siswa', 'Kelas XII')
-ON CONFLICT (email) DO NOTHING;
-
--- Contoh Pendampingan awal untuk demonstrasi
-INSERT INTO public.pendampingan (nama_siswa, kelas, topik, jadwal_preferensi, status, catatan_guru)
-VALUES 
-  ('Dimas Prasetyo', 'Kelas XI', 'Pertemanan', 'Saat jam istirahat', 'Menunggu', ''),
-  ('Salsa Nabila', 'Kelas XII', 'Konflik dengan teman', 'Pulang sekolah', 'Dijadwalkan', 'Silakan temui Ibu di Ruang BK Lantai 2 pukul 14.30 WIB.')
-ON CONFLICT DO NOTHING;
-
--- Contoh Pengaduan awal
 INSERT INTO public.pengaduan (jenis, isi, status, tanggapan_admin)
 VALUES 
   ('Saran isi', 'Mohon tambahkan lebih banyak contoh latihan skenario tentang menghadapi teman yang gemar menyindir di media sosial.', 'Diproses', 'Terima kasih atas sarannya! Tim pengembang sedang menyiapkan modul edisi media sosial.'),
-  ('Kendala teknis', 'Tampilan kartu sangat responsif dan nyaman diakses di smartphone Android.', 'Selesai', 'Terima kasih atas apresiasinya!')
-ON CONFLICT DO NOTHING;
+  ('Kendala teknis', 'Tampilan kartu sangat responsif dan nyaman diakses di smartphone.', 'Selesai', 'Terima kasih atas apresiasinya!');

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useEffect, useCallback } from "react";
 import {
@@ -53,6 +53,7 @@ import { INITIAL_MODUL } from "../data/contentData";
 
 const SUPABASE_SQL_SCHEMA = `-- Copy & Run script ini di SQL Editor Supabase Anda
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+GRANT USAGE ON SCHEMA public TO postgres, anon, authenticated, service_role;
 
 CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -65,7 +66,8 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   last_active TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public profiles access" ON public.profiles FOR ALL USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Public profiles access" ON public.profiles;
+CREATE POLICY "Public profiles access" ON public.profiles FOR ALL TO anon, authenticated, service_role USING (true) WITH CHECK (true);
 
 CREATE TABLE IF NOT EXISTS public.pendampingan (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -79,7 +81,8 @@ CREATE TABLE IF NOT EXISTS public.pendampingan (
   kontak_siswa TEXT DEFAULT ''
 );
 ALTER TABLE public.pendampingan ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public pendampingan access" ON public.pendampingan FOR ALL USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Public pendampingan access" ON public.pendampingan;
+CREATE POLICY "Public pendampingan access" ON public.pendampingan FOR ALL TO anon, authenticated, service_role USING (true) WITH CHECK (true);
 
 CREATE TABLE IF NOT EXISTS public.pengaduan (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -91,7 +94,8 @@ CREATE TABLE IF NOT EXISTS public.pengaduan (
   pengirim_anonim BOOLEAN DEFAULT true
 );
 ALTER TABLE public.pengaduan ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public pengaduan access" ON public.pengaduan FOR ALL USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Public pengaduan access" ON public.pengaduan;
+CREATE POLICY "Public pengaduan access" ON public.pengaduan FOR ALL TO anon, authenticated, service_role USING (true) WITH CHECK (true);
 
 CREATE TABLE IF NOT EXISTS public.jurnal (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -103,7 +107,8 @@ CREATE TABLE IF NOT EXISTS public.jurnal (
   updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 ALTER TABLE public.jurnal ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public jurnal access" ON public.jurnal FOR ALL USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Public jurnal access" ON public.jurnal;
+CREATE POLICY "Public jurnal access" ON public.jurnal FOR ALL TO anon, authenticated, service_role USING (true) WITH CHECK (true);
 
 CREATE TABLE IF NOT EXISTS public.modul_progress (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -115,7 +120,11 @@ CREATE TABLE IF NOT EXISTS public.modul_progress (
   updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 ALTER TABLE public.modul_progress ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public progress access" ON public.modul_progress FOR ALL USING (true) WITH CHECK (true);`;
+DROP POLICY IF EXISTS "Public progress access" ON public.modul_progress;
+CREATE POLICY "Public progress access" ON public.modul_progress FOR ALL TO anon, authenticated, service_role USING (true) WITH CHECK (true);
+
+GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres, anon, authenticated, service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO postgres, anon, authenticated, service_role;`;
 
 export default function TemanSehatApp() {
   const [user, setUser] = useState(null);
