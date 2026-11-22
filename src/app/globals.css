@@ -4,25 +4,25 @@
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-800 antialiased selection:bg-sky-500 selection:text-white;
+    @apply bg-pink-50/30 text-slate-800 antialiased selection:bg-pink-500 selection:text-white;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar Pink-Hijau */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #fdf2f8;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #f472b6;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #10b981;
 }
 
 @media print {

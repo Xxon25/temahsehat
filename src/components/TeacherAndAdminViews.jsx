@@ -1,23 +1,18 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import {
-  Users,
   Calendar,
   CheckCircle2,
-  Clock,
   Trash2,
   MessageSquare,
   Plus,
   Search,
   ShieldCheck,
   GraduationCap,
-  BookOpen,
   Database,
   RefreshCw,
-  UserPlus,
-  Send,
-  AlertCircle
+  UserPlus
 } from "lucide-react";
 
 export default function TeacherAndAdminViews({
@@ -39,33 +34,28 @@ export default function TeacherAndAdminViews({
   onOpenDbModal,
   isOnline
 }) {
-  // State Guru BK
-  const [bkTab, setBkTab] = useState("konseling"); // 'konseling' | 'siswa'
+  const [bkTab, setBkTab] = useState("konseling");
   const [bkFilter, setBkFilter] = useState("Semua");
   const [bkSearch, setBkSearch] = useState("");
   const [editingNoteId, setEditingNoteId] = useState(null);
   const [noteText, setNoteText] = useState("");
 
-  // State Admin
-  const [adminSubTab, setAdminSubTab] = useState("users"); // 'users' | 'konseling' | 'pengaduan' | 'cms'
+  const [adminSubTab, setAdminSubTab] = useState("users");
   const [userSearch, setUserSearch] = useState("");
   const [newUserName, setNewUserName] = useState("");
   const [newUserEmail, setNewUserEmail] = useState("");
   const [newUserKelas, setNewUserKelas] = useState("Kelas XI MIPA 1");
   const [newUserRole, setNewUserRole] = useState("siswa");
 
-  // State Balasan Pengaduan Admin
   const [replyingAduanId, setReplyingAduanId] = useState(null);
   const [replyAduanText, setReplyAduanText] = useState("");
 
-  // State CMS Modul Baru Admin
   const [modKode, setModKode] = useState("PLUS");
   const [modJudul, setModJudul] = useState("");
   const [modRingkasan, setModRingkasan] = useState("");
   const [modDeskripsi, setModDeskripsi] = useState("");
   const [modTantangan, setModTantangan] = useState("");
 
-  // Statistik Konseling
   const statTotalBk = pendampinganList.length;
   const statMenungguBk = pendampinganList.filter((x) => x.status === "Menunggu").length;
   const statJadwalBk = pendampinganList.filter((x) => x.status === "Dijadwalkan").length;
@@ -75,7 +65,7 @@ export default function TeacherAndAdminViews({
   const guruProfiles = profiles.filter((p) => p.role === "guru");
 
   // -------------------------------------------------------------------------
-  // 1. PORTAL GURU BK
+  // 1. PORTAL GURU BK (HIJAU & PINK THEME)
   // -------------------------------------------------------------------------
   if (activeMenu === "guru") {
     const filteredBk = pendampinganList.filter((item) => {
@@ -91,8 +81,7 @@ export default function TeacherAndAdminViews({
 
     return (
       <div className="space-y-6">
-        {/* HEADER GURU BK */}
-        <div className="rounded-3xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 p-6 sm:p-8 text-white shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="rounded-3xl bg-gradient-to-r from-emerald-600 via-teal-500 to-pink-500 p-6 sm:p-8 text-white shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-xs font-bold mb-2">
               <GraduationCap className="w-4 h-4" />
@@ -121,7 +110,7 @@ export default function TeacherAndAdminViews({
               onClick={() => setBkTab("siswa")}
               className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all ${
                 bkTab === "siswa"
-                  ? "bg-white text-emerald-800 shadow-sm"
+                  ? "bg-white text-pink-700 shadow-sm"
                   : "bg-white/15 text-white hover:bg-white/25"
               }`}
             >
@@ -130,43 +119,41 @@ export default function TeacherAndAdminViews({
           </div>
         </div>
 
-        {/* 4 KPI CARDS */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm">
+          <div className="bg-white p-5 rounded-2xl border border-pink-200/80 shadow-sm">
             <div className="text-xs font-bold uppercase text-slate-400">Total Permohonan</div>
             <div className="text-3xl font-extrabold text-slate-900 mt-1">{statTotalBk}</div>
             <div className="text-xs text-slate-500 mt-1">Seluruh pengajuan masuk</div>
           </div>
-          <div className="bg-white p-5 rounded-2xl border border-amber-200 shadow-sm">
-            <div className="text-xs font-bold uppercase text-amber-600">Menunggu Respon</div>
-            <div className="text-3xl font-extrabold text-amber-600 mt-1">{statMenungguBk}</div>
+          <div className="bg-white p-5 rounded-2xl border border-pink-200 shadow-sm">
+            <div className="text-xs font-bold uppercase text-pink-600">Menunggu Respon</div>
+            <div className="text-3xl font-extrabold text-pink-600 mt-1">{statMenungguBk}</div>
             <div className="text-xs text-slate-500 mt-1">Perlu segera dijadwalkan</div>
           </div>
-          <div className="bg-white p-5 rounded-2xl border border-sky-200 shadow-sm">
-            <div className="text-xs font-bold uppercase text-sky-600">Terjadwal</div>
-            <div className="text-3xl font-extrabold text-sky-600 mt-1">{statJadwalBk}</div>
+          <div className="bg-white p-5 rounded-2xl border border-emerald-200 shadow-sm">
+            <div className="text-xs font-bold uppercase text-emerald-600">Terjadwal</div>
+            <div className="text-3xl font-extrabold text-emerald-600 mt-1">{statJadwalBk}</div>
             <div className="text-xs text-slate-500 mt-1">Menunggu sesi tatap muka</div>
           </div>
-          <div className="bg-white p-5 rounded-2xl border border-emerald-200 shadow-sm">
-            <div className="text-xs font-bold uppercase text-emerald-600">Selesai</div>
-            <div className="text-3xl font-extrabold text-emerald-600 mt-1">{statSelesaiBk}</div>
+          <div className="bg-white p-5 rounded-2xl border border-teal-200 shadow-sm">
+            <div className="text-xs font-bold uppercase text-teal-600">Selesai</div>
+            <div className="text-3xl font-extrabold text-teal-600 mt-1">{statSelesaiBk}</div>
             <div className="text-xs text-slate-500 mt-1">Pendampingan tuntas</div>
           </div>
         </div>
 
         {bkTab === "konseling" ? (
-          <div className="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-5">
-            {/* FILTER & SEARCH BAR */}
+          <div className="bg-white rounded-3xl border border-emerald-200/80 p-6 shadow-sm space-y-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex flex-wrap gap-1.5 bg-slate-100 p-1.5 rounded-2xl">
+              <div className="flex flex-wrap gap-1.5 bg-pink-50/80 p-1.5 rounded-2xl border border-pink-100">
                 {["Semua", "Menunggu", "Dijadwalkan", "Selesai"].map((st) => (
                   <button
                     key={st}
                     onClick={() => setBkFilter(st)}
                     className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
                       bkFilter === st
-                        ? "bg-white text-emerald-700 shadow-sm"
-                        : "text-slate-600 hover:text-slate-900"
+                        ? "bg-gradient-to-r from-pink-500 to-emerald-500 text-white shadow-sm"
+                        : "text-slate-600 hover:text-pink-600"
                     }`}
                   >
                     {st}
@@ -175,18 +162,17 @@ export default function TeacherAndAdminViews({
               </div>
 
               <div className="relative w-full sm:w-72">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                <Search className="w-4 h-4 text-pink-400 absolute left-3.5 top-3" />
                 <input
                   type="text"
                   value={bkSearch}
                   onChange={(e) => setBkSearch(e.target.value)}
                   placeholder="Cari nama siswa, kelas, topik..."
-                  className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-300 text-xs outline-none focus:border-emerald-500"
+                  className="w-full pl-9 pr-4 py-2 rounded-xl border border-pink-200 text-xs outline-none focus:border-pink-500"
                 />
               </div>
             </div>
 
-            {/* LIST PERMOHONAN KONSELING */}
             {filteredBk.length === 0 ? (
               <div className="p-10 text-center text-sm text-slate-500">
                 Tidak ada data permohonan konseling yang sesuai filter.
@@ -196,7 +182,7 @@ export default function TeacherAndAdminViews({
                 {filteredBk.map((item) => (
                   <div
                     key={item.id}
-                    className="p-5 rounded-2xl border border-slate-200 hover:border-emerald-300 transition-all bg-slate-50/50 space-y-3"
+                    className="p-5 rounded-2xl border border-pink-100 hover:border-emerald-300 transition-all bg-pink-50/20 space-y-3"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div>
@@ -204,7 +190,7 @@ export default function TeacherAndAdminViews({
                           <h3 className="text-base font-extrabold text-slate-900">
                             {item.nama_siswa}
                           </h3>
-                          <span className="px-2.5 py-0.5 rounded-md bg-slate-200 text-slate-700 font-bold text-xs">
+                          <span className="px-2.5 py-0.5 rounded-md bg-pink-100 text-pink-700 font-bold text-xs">
                             {item.kelas}
                           </span>
                         </div>
@@ -217,7 +203,7 @@ export default function TeacherAndAdminViews({
                       <span
                         className={`self-start sm:self-auto px-3 py-1 rounded-full text-xs font-extrabold ${
                           item.status === "Dijadwalkan"
-                            ? "bg-sky-100 text-sky-700"
+                            ? "bg-pink-100 text-pink-700"
                             : item.status === "Selesai"
                             ? "bg-emerald-100 text-emerald-700"
                             : "bg-amber-100 text-amber-800"
@@ -227,9 +213,9 @@ export default function TeacherAndAdminViews({
                       </span>
                     </div>
 
-                    <div className="p-3.5 rounded-xl bg-white border border-slate-200 text-xs sm:text-sm">
+                    <div className="p-3.5 rounded-xl bg-white border border-pink-100 text-xs sm:text-sm">
                       <span className="font-bold text-slate-700">Topik Konseling: </span>
-                      <span className="font-semibold text-sky-700">{item.topik}</span>
+                      <span className="font-semibold text-pink-600">{item.topik}</span>
                     </div>
 
                     {item.catatan_guru && (
@@ -238,10 +224,9 @@ export default function TeacherAndAdminViews({
                       </div>
                     )}
 
-                    {/* INLINE EDITOR UNTUK RESPON JADWAL GURU BK */}
                     {editingNoteId === item.id && (
-                      <div className="p-4 rounded-2xl bg-sky-50 border border-sky-200 space-y-3">
-                        <label className="block text-xs font-extrabold text-sky-900">
+                      <div className="p-4 rounded-2xl bg-pink-50 border border-pink-200 space-y-3">
+                        <label className="block text-xs font-extrabold text-pink-900">
                           Tulis Pesan Jadwal & Lokasi Pertemuan untuk {item.nama_siswa}:
                         </label>
                         <textarea
@@ -249,7 +234,7 @@ export default function TeacherAndAdminViews({
                           value={noteText}
                           onChange={(e) => setNoteText(e.target.value)}
                           placeholder="Contoh: Silakan temui Ibu di Ruang BK Lantai 2 saat jam istirahat pukul 09.45 WIB ya."
-                          className="w-full p-3 rounded-xl border border-sky-300 text-xs sm:text-sm outline-none"
+                          className="w-full p-3 rounded-xl border border-pink-300 text-xs sm:text-sm outline-none"
                         />
                         <div className="flex gap-2">
                           <button
@@ -261,7 +246,7 @@ export default function TeacherAndAdminViews({
                               });
                               setEditingNoteId(null);
                             }}
-                            className="px-4 py-2 rounded-xl bg-sky-600 text-white font-bold text-xs hover:bg-sky-700"
+                            className="px-4 py-2 rounded-xl bg-pink-600 text-white font-bold text-xs hover:bg-pink-700"
                           >
                             Simpan & Jadwalkan
                           </button>
@@ -276,7 +261,6 @@ export default function TeacherAndAdminViews({
                       </div>
                     )}
 
-                    {/* ACTION BUTTONS */}
                     <div className="flex flex-wrap items-center gap-2 pt-1">
                       <button
                         type="button"
@@ -287,7 +271,7 @@ export default function TeacherAndAdminViews({
                               `Halo ${item.nama_siswa}, silakan datang ke Ruang Konseling BK sesuai jadwal preferensimu (${item.jadwal_preferensi}).`
                           );
                         }}
-                        className="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs inline-flex items-center gap-1.5"
+                        className="px-3.5 py-2 rounded-xl bg-pink-500 hover:bg-pink-600 text-white font-bold text-xs inline-flex items-center gap-1.5"
                       >
                         <Calendar className="w-3.5 h-3.5" />
                         {item.catatan_guru ? "Ubah Jadwal / Pesan" : "Terima & Jadwalkan"}
@@ -323,8 +307,7 @@ export default function TeacherAndAdminViews({
             )}
           </div>
         ) : (
-          /* TAB DIREKTORI SISWA */
-          <div className="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-4">
+          <div className="bg-white rounded-3xl border border-pink-200/80 p-6 shadow-sm space-y-4">
             <h2 className="text-lg font-extrabold text-slate-900">
               👥 Daftar Siswa Terdaftar di TemanSehat
             </h2>
@@ -332,13 +315,13 @@ export default function TeacherAndAdminViews({
               {siswaProfiles.map((s) => (
                 <div
                   key={s.id || s.email}
-                  className="p-4 rounded-2xl border border-slate-200 flex items-center justify-between bg-slate-50/50"
+                  className="p-4 rounded-2xl border border-pink-200 flex items-center justify-between bg-pink-50/30"
                 >
                   <div>
                     <div className="font-extrabold text-slate-900 text-sm">{s.nama}</div>
                     <div className="text-xs text-slate-500">{s.email}</div>
                   </div>
-                  <span className="px-3 py-1 rounded-full bg-sky-100 text-sky-700 font-bold text-xs">
+                  <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 font-bold text-xs">
                     {s.kelas || "Siswa"}
                   </span>
                 </div>
@@ -351,7 +334,7 @@ export default function TeacherAndAdminViews({
   }
 
   // -------------------------------------------------------------------------
-  // 2. PUSAT KONTROL ADMIN (FULL CONTROL - SUPERUSER)
+  // 2. PUSAT KONTROL ADMIN (PINK & HIJAU SUPERUSER THEME)
   // -------------------------------------------------------------------------
   if (activeMenu === "admin") {
     const filteredUsers = profiles.filter((u) => {
@@ -403,17 +386,17 @@ export default function TeacherAndAdminViews({
 
     return (
       <div className="space-y-6">
-        {/* ADMIN SUPERUSER BANNER */}
-        <div className="rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-sky-900 p-6 sm:p-8 text-white shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        {/* ADMIN SUPERUSER BANNER PINK-HIJAU */}
+        <div className="rounded-3xl bg-gradient-to-r from-pink-600 via-rose-500 to-emerald-600 p-6 sm:p-8 text-white shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-300 text-xs font-bold mb-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 border border-white/30 text-white text-xs font-bold mb-2">
               <ShieldCheck className="w-4 h-4" />
               Superuser Access • Full System Control
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold">
-              Pusat Kontrol Administrator TemanSehat
+              Pusat Kontrol Administrator TemanSehat 🌸🌿
             </h1>
-            <p className="text-slate-300 text-sm mt-1">
+            <p className="text-pink-50 text-sm mt-1">
               Kendali penuh atas seluruh akun pengguna, promosi Role (Siswa / Guru BK / Admin),
               jadwal konseling, pengaduan, hingga kurikulum modul.
             </p>
@@ -421,45 +404,44 @@ export default function TeacherAndAdminViews({
 
           <button
             onClick={onOpenDbModal}
-            className="self-start lg:self-auto px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs sm:text-sm inline-flex items-center gap-2 shrink-0"
+            className="self-start lg:self-auto px-4 py-2.5 rounded-xl bg-white text-pink-700 hover:bg-pink-50 font-bold text-xs sm:text-sm inline-flex items-center gap-2 shrink-0 shadow-md"
           >
-            <Database className="w-4 h-4 text-emerald-400" />
-            {isOnline ? "Supabase Cloud Terhubung" : "Konfigurasi Database Supabase"}
+            <Database className="w-4 h-4 text-emerald-600" />
+            {isOnline ? "Supabase Cloud Terhubung" : "Setup Database Supabase ⚙️"}
           </button>
         </div>
 
-        {/* 4 KPI SYSTEM CARDS */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm">
+          <div className="bg-white p-5 rounded-2xl border border-pink-200/90 shadow-sm">
             <div className="text-xs font-bold uppercase text-slate-400">Total Akun</div>
             <div className="text-3xl font-extrabold text-slate-900 mt-1">{profiles.length}</div>
-            <div className="text-xs text-sky-600 font-semibold mt-1">
+            <div className="text-xs text-pink-600 font-semibold mt-1">
               {siswaProfiles.length} Siswa • {guruProfiles.length} Guru BK
             </div>
           </div>
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm">
+          <div className="bg-white p-5 rounded-2xl border border-emerald-200/90 shadow-sm">
             <div className="text-xs font-bold uppercase text-slate-400">Sesi Konseling BK</div>
             <div className="text-3xl font-extrabold text-emerald-600 mt-1">
               {pendampinganList.length}
             </div>
             <div className="text-xs text-slate-500 mt-1">{statMenungguBk} menunggu jadwal</div>
           </div>
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm">
+          <div className="bg-white p-5 rounded-2xl border border-pink-200/90 shadow-sm">
             <div className="text-xs font-bold uppercase text-slate-400">Pengaduan & Saran</div>
-            <div className="text-3xl font-extrabold text-amber-600 mt-1">
+            <div className="text-3xl font-extrabold text-rose-600 mt-1">
               {pengaduanList.length}
             </div>
             <div className="text-xs text-slate-500 mt-1">Kotak aspirasi pengguna</div>
           </div>
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm">
+          <div className="bg-white p-5 rounded-2xl border border-emerald-200/90 shadow-sm">
             <div className="text-xs font-bold uppercase text-slate-400">Modul Aktif</div>
-            <div className="text-3xl font-extrabold text-indigo-600 mt-1">{moduls.length}</div>
+            <div className="text-3xl font-extrabold text-teal-600 mt-1">{moduls.length}</div>
             <div className="text-xs text-slate-500 mt-1">Kurikulum psikoedukasi</div>
           </div>
         </div>
 
         {/* ADMIN SUB-NAVIGATION TABS */}
-        <div className="flex flex-wrap gap-2 bg-white p-2 rounded-2xl border border-slate-200 shadow-sm">
+        <div className="flex flex-wrap gap-2 bg-white p-2 rounded-2xl border border-pink-200 shadow-sm">
           {[
             { id: "users", label: "👥 Manajemen Pengguna & Role", count: profiles.length },
             { id: "konseling", label: "📅 Kontrol Konseling BK", count: pendampinganList.length },
@@ -471,14 +453,14 @@ export default function TeacherAndAdminViews({
               onClick={() => setAdminSubTab(t.id)}
               className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center gap-2 ${
                 adminSubTab === t.id
-                  ? "bg-sky-600 text-white shadow-sm"
-                  : "text-slate-600 hover:bg-slate-100"
+                  ? "bg-gradient-to-r from-pink-500 to-emerald-500 text-white shadow-sm"
+                  : "text-slate-600 hover:bg-pink-50"
               }`}
             >
               <span>{t.label}</span>
               <span
                 className={`px-2 py-0.5 rounded-full text-[11px] ${
-                  adminSubTab === t.id ? "bg-white/20 text-white" : "bg-slate-200 text-slate-700"
+                  adminSubTab === t.id ? "bg-white/20 text-white" : "bg-pink-100 text-pink-700"
                 }`}
               >
                 {t.count}
@@ -490,10 +472,9 @@ export default function TeacherAndAdminViews({
         {/* SUB-TAB 1: MANAJEMEN PENGGUNA & HAK AKSES ROLE */}
         {adminSubTab === "users" && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* FORM TAMBAH AKUN BARU */}
-            <div className="lg:col-span-4 bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm h-fit">
+            <div className="lg:col-span-4 bg-white rounded-3xl border border-pink-200/90 p-6 shadow-sm h-fit">
               <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2 mb-1">
-                <UserPlus className="w-5 h-5 text-sky-600" />
+                <UserPlus className="w-5 h-5 text-pink-600" />
                 Tambah Akun Pengguna Baru
               </h3>
               <p className="text-xs text-slate-500 mb-4">
@@ -511,7 +492,7 @@ export default function TeacherAndAdminViews({
                     value={newUserName}
                     onChange={(e) => setNewUserName(e.target.value)}
                     placeholder="Nama lengkap"
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm outline-none focus:border-sky-500"
+                    className="w-full px-3.5 py-2 rounded-xl border border-pink-200 text-sm outline-none focus:border-pink-500"
                   />
                 </div>
                 <div>
@@ -524,7 +505,7 @@ export default function TeacherAndAdminViews({
                     value={newUserEmail}
                     onChange={(e) => setNewUserEmail(e.target.value)}
                     placeholder="user@sekolah.id"
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm outline-none focus:border-sky-500"
+                    className="w-full px-3.5 py-2 rounded-xl border border-pink-200 text-sm outline-none focus:border-pink-500"
                   />
                 </div>
                 <div>
@@ -536,7 +517,7 @@ export default function TeacherAndAdminViews({
                     value={newUserKelas}
                     onChange={(e) => setNewUserKelas(e.target.value)}
                     placeholder="Kelas XI / Guru BK"
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm outline-none focus:border-sky-500"
+                    className="w-full px-3.5 py-2 rounded-xl border border-pink-200 text-sm outline-none focus:border-pink-500"
                   />
                 </div>
                 <div>
@@ -546,7 +527,7 @@ export default function TeacherAndAdminViews({
                   <select
                     value={newUserRole}
                     onChange={(e) => setNewUserRole(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm bg-white outline-none focus:border-sky-500"
+                    className="w-full px-3.5 py-2 rounded-xl border border-pink-200 text-sm bg-white outline-none focus:border-pink-500"
                   >
                     <option value="siswa">🎒 Siswa</option>
                     <option value="guru">🎓 Guru BK</option>
@@ -555,7 +536,7 @@ export default function TeacherAndAdminViews({
                 </div>
                 <button
                   type="submit"
-                  className="w-full py-2.5 px-4 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm shadow-sm inline-flex items-center justify-center gap-2"
+                  className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-pink-500 to-emerald-500 hover:opacity-95 text-white font-bold text-sm shadow-sm inline-flex items-center justify-center gap-2"
                 >
                   <Plus className="w-4 h-4" />
                   Simpan Akun Baru
@@ -563,8 +544,7 @@ export default function TeacherAndAdminViews({
               </form>
             </div>
 
-            {/* DAFTAR PENGGUNA & UBAH ROLE INSTAN */}
-            <div className="lg:col-span-8 bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-4">
+            <div className="lg:col-span-8 bg-white rounded-3xl border border-emerald-200/90 p-6 shadow-sm space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h3 className="text-base font-extrabold text-slate-900">
@@ -576,13 +556,13 @@ export default function TeacherAndAdminViews({
                   </p>
                 </div>
                 <div className="relative w-full sm:w-64">
-                  <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                  <Search className="w-4 h-4 text-pink-400 absolute left-3 top-2.5" />
                   <input
                     type="text"
                     value={userSearch}
                     onChange={(e) => setUserSearch(e.target.value)}
                     placeholder="Cari nama atau email..."
-                    className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-300 text-xs outline-none focus:border-sky-500"
+                    className="w-full pl-9 pr-3 py-2 rounded-xl border border-pink-200 text-xs outline-none focus:border-pink-500"
                   />
                 </div>
               </div>
@@ -593,13 +573,13 @@ export default function TeacherAndAdminViews({
                   return (
                     <div
                       key={u.id || u.email}
-                      className="p-4 rounded-2xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50 hover:bg-white transition-all"
+                      className="p-4 rounded-2xl border border-pink-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-pink-50/20 hover:bg-white transition-all"
                     >
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="font-extrabold text-slate-900 text-sm">{u.nama}</span>
                           {isSelf && (
-                            <span className="px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 font-bold text-[10px]">
+                            <span className="px-2 py-0.5 rounded-full bg-pink-100 text-pink-700 font-bold text-[10px]">
                               Anda
                             </span>
                           )}
@@ -615,10 +595,10 @@ export default function TeacherAndAdminViews({
                           onChange={(e) => onUpdateUserRole(u.email, e.target.value)}
                           className={`px-3 py-1.5 rounded-xl border text-xs font-extrabold outline-none ${
                             u.role === "admin"
-                              ? "bg-amber-50 text-amber-800 border-amber-300"
+                              ? "bg-rose-100 text-rose-800 border-rose-300"
                               : u.role === "guru"
                               ? "bg-emerald-50 text-emerald-800 border-emerald-300"
-                              : "bg-sky-50 text-sky-800 border-sky-300"
+                              : "bg-pink-50 text-pink-800 border-pink-300"
                           }`}
                         >
                           <option value="siswa">🎒 Role: Siswa</option>
@@ -647,7 +627,7 @@ export default function TeacherAndAdminViews({
 
         {/* SUB-TAB 2: KONTROL SEMUA KONSELING BK */}
         {adminSubTab === "konseling" && (
-          <div className="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-4">
+          <div className="bg-white rounded-3xl border border-pink-200/90 p-6 shadow-sm space-y-4">
             <h3 className="text-lg font-extrabold text-slate-900">
               📅 Manajemen Seluruh Jadwal Konseling BK
             </h3>
@@ -655,7 +635,7 @@ export default function TeacherAndAdminViews({
               {pendampinganList.map((item) => (
                 <div
                   key={item.id}
-                  className="p-4 rounded-2xl border border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                  className="p-4 rounded-2xl border border-pink-100 bg-pink-50/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
@@ -665,7 +645,7 @@ export default function TeacherAndAdminViews({
                       <span
                         className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
                           item.status === "Dijadwalkan"
-                            ? "bg-sky-100 text-sky-700"
+                            ? "bg-pink-100 text-pink-700"
                             : item.status === "Selesai"
                             ? "bg-emerald-100 text-emerald-700"
                             : "bg-amber-100 text-amber-800"
@@ -674,7 +654,7 @@ export default function TeacherAndAdminViews({
                         {item.status}
                       </span>
                     </div>
-                    <div className="text-xs font-bold text-sky-700">
+                    <div className="text-xs font-bold text-pink-700">
                       Topik: {item.topik} • Waktu: {item.jadwal_preferensi}
                     </div>
                     {item.catatan_guru && (
@@ -690,7 +670,7 @@ export default function TeacherAndAdminViews({
                       onChange={(e) =>
                         onUpdatePendampingan(item.id, { status: e.target.value })
                       }
-                      className="px-3 py-1.5 rounded-xl border border-slate-300 text-xs font-bold bg-white"
+                      className="px-3 py-1.5 rounded-xl border border-pink-200 text-xs font-bold bg-white"
                     >
                       <option value="Menunggu">Menunggu</option>
                       <option value="Dijadwalkan">Dijadwalkan</option>
@@ -711,7 +691,7 @@ export default function TeacherAndAdminViews({
 
         {/* SUB-TAB 3: KOTAK PENGADUAN & MASUKAN */}
         {adminSubTab === "pengaduan" && (
-          <div className="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-4">
+          <div className="bg-white rounded-3xl border border-pink-200/90 p-6 shadow-sm space-y-4">
             <h3 className="text-lg font-extrabold text-slate-900">
               📮 Manajemen Kotak Pengaduan & Masukan Pengguna
             </h3>
@@ -722,10 +702,10 @@ export default function TeacherAndAdminViews({
                 {pengaduanList.map((ad) => (
                   <div
                     key={ad.id}
-                    className="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-3"
+                    className="p-5 rounded-2xl border border-pink-100 bg-pink-50/20 space-y-3"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="px-3 py-1 rounded-full bg-sky-100 text-sky-800 font-extrabold text-xs">
+                      <span className="px-3 py-1 rounded-full bg-pink-100 text-pink-800 font-extrabold text-xs">
                         Kategori: {ad.jenis}
                       </span>
                       <span
@@ -733,7 +713,7 @@ export default function TeacherAndAdminViews({
                           ad.status === "Selesai"
                             ? "bg-emerald-100 text-emerald-700"
                             : ad.status === "Diproses"
-                            ? "bg-sky-100 text-sky-700"
+                            ? "bg-pink-100 text-pink-700"
                             : "bg-amber-100 text-amber-800"
                         }`}
                       >
@@ -744,13 +724,13 @@ export default function TeacherAndAdminViews({
                     <p className="text-sm text-slate-800 font-medium">{ad.isi}</p>
 
                     {ad.tanggapan_admin && (
-                      <div className="p-3.5 rounded-xl bg-sky-50 border border-sky-200 text-xs text-sky-950">
+                      <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950">
                         <b>👑 Tanggapan Resmi Admin:</b> {ad.tanggapan_admin}
                       </div>
                     )}
 
                     {replyingAduanId === ad.id && (
-                      <div className="p-4 rounded-2xl bg-white border border-sky-300 space-y-2.5">
+                      <div className="p-4 rounded-2xl bg-white border border-pink-300 space-y-2.5">
                         <label className="block text-xs font-extrabold text-slate-700">
                           Tulis Balasan / Tindak Lanjut Admin:
                         </label>
@@ -759,7 +739,7 @@ export default function TeacherAndAdminViews({
                           value={replyAduanText}
                           onChange={(e) => setReplyAduanText(e.target.value)}
                           placeholder="Tulis balasan untuk masukan ini..."
-                          className="w-full p-2.5 rounded-xl border border-slate-300 text-xs outline-none"
+                          className="w-full p-2.5 rounded-xl border border-pink-200 text-xs outline-none"
                         />
                         <div className="flex gap-2">
                           <button
@@ -771,7 +751,7 @@ export default function TeacherAndAdminViews({
                               });
                               setReplyingAduanId(null);
                             }}
-                            className="px-3.5 py-1.5 rounded-xl bg-sky-600 text-white font-bold text-xs"
+                            className="px-3.5 py-1.5 rounded-xl bg-pink-600 text-white font-bold text-xs"
                           >
                             Simpan Tanggapan
                           </button>
@@ -793,7 +773,7 @@ export default function TeacherAndAdminViews({
                           setReplyingAduanId(ad.id);
                           setReplyAduanText(ad.tanggapan_admin || "");
                         }}
-                        className="px-3.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs inline-flex items-center gap-1.5"
+                        className="px-3.5 py-1.5 rounded-xl bg-pink-500 hover:bg-pink-600 text-white font-bold text-xs inline-flex items-center gap-1.5"
                       >
                         <MessageSquare className="w-3.5 h-3.5" />
                         Beri Tanggapan
@@ -828,7 +808,7 @@ export default function TeacherAndAdminViews({
         {/* SUB-TAB 4: CMS KURIKULUM MODUL */}
         {adminSubTab === "cms" && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-5 bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm h-fit">
+            <div className="lg:col-span-5 bg-white rounded-3xl border border-pink-200/90 p-6 shadow-sm h-fit">
               <h3 className="text-base font-extrabold text-slate-900 mb-1">
                 ➕ Tambah Modul Pembelajaran Baru
               </h3>
@@ -846,7 +826,7 @@ export default function TeacherAndAdminViews({
                       type="text"
                       value={modKode}
                       onChange={(e) => setModKode(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm"
+                      className="w-full px-3 py-2 rounded-xl border border-pink-200 text-sm"
                     />
                   </div>
                   <div className="col-span-2">
@@ -859,7 +839,7 @@ export default function TeacherAndAdminViews({
                       value={modJudul}
                       onChange={(e) => setModJudul(e.target.value)}
                       placeholder="Etika Pertemanan Digital"
-                      className="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm"
+                      className="w-full px-3 py-2 rounded-xl border border-pink-200 text-sm"
                     />
                   </div>
                 </div>
@@ -873,7 +853,7 @@ export default function TeacherAndAdminViews({
                     value={modRingkasan}
                     onChange={(e) => setModRingkasan(e.target.value)}
                     placeholder="Bijak berkomentar dan menjaga privasi di grup chat"
-                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm"
+                    className="w-full px-3 py-2 rounded-xl border border-pink-200 text-sm"
                   />
                 </div>
 
@@ -887,7 +867,7 @@ export default function TeacherAndAdminViews({
                     value={modDeskripsi}
                     onChange={(e) => setModDeskripsi(e.target.value)}
                     placeholder="Tuliskan penjelasan lengkap modul..."
-                    className="w-full p-3 rounded-xl border border-slate-300 text-sm"
+                    className="w-full p-3 rounded-xl border border-pink-200 text-sm"
                   />
                 </div>
 
@@ -900,27 +880,27 @@ export default function TeacherAndAdminViews({
                     value={modTantangan}
                     onChange={(e) => setModTantangan(e.target.value)}
                     placeholder="Tulis komentar positif di karya temanmu hari ini."
-                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm"
+                    className="w-full px-3 py-2 rounded-xl border border-pink-200 text-sm"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-2.5 px-4 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm"
+                  className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-pink-500 to-emerald-500 hover:opacity-95 text-white font-bold text-sm"
                 >
                   + Publikasikan Modul
                 </button>
               </form>
             </div>
 
-            <div className="lg:col-span-7 bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-4">
+            <div className="lg:col-span-7 bg-white rounded-3xl border border-emerald-200/90 p-6 shadow-sm space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-extrabold text-slate-900">
                   📚 Daftar Modul Kurikulum Aktif ({moduls.length})
                 </h3>
                 <button
                   onClick={onResetCustomModuls}
-                  className="px-3 py-1.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-100 text-xs font-bold inline-flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-xl border border-pink-200 text-pink-700 hover:bg-pink-50 text-xs font-bold inline-flex items-center gap-1.5"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
                   Reset ke Default (6 Modul)
@@ -931,10 +911,10 @@ export default function TeacherAndAdminViews({
                 {moduls.map((m, idx) => (
                   <div
                     key={m.id || idx}
-                    className="p-4 rounded-2xl border border-slate-200 bg-slate-50/50 flex items-start justify-between gap-3"
+                    className="p-4 rounded-2xl border border-pink-100 bg-pink-50/20 flex items-start justify-between gap-3"
                   >
                     <div>
-                      <span className="px-2.5 py-0.5 rounded-md bg-sky-100 text-sky-700 font-extrabold text-xs">
+                      <span className="px-2.5 py-0.5 rounded-md bg-pink-100 text-pink-700 font-extrabold text-xs">
                         Modul 0{idx + 1} • {m.kode}
                       </span>
                       <h4 className="font-extrabold text-slate-900 text-sm mt-1">{m.judul}</h4>

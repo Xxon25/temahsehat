@@ -1,13 +1,11 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import {
   BookOpen,
   Lightbulb,
-  CreditCard,
   PenTool,
   HeartHandshake,
-  MessageSquareWarning,
   CheckCircle2,
   Clock,
   ArrowRight,
@@ -18,11 +16,9 @@ import {
   ShieldAlert,
   MessageCircle,
   Award,
-  Trash2,
   Save,
   RotateCcw,
-  Calendar,
-  UserCheck
+  Calendar
 } from "lucide-react";
 
 export default function StudentViews({
@@ -43,26 +39,20 @@ export default function StudentViews({
   onSubmitPengaduan,
   showToast
 }) {
-  // State untuk Modul Reader
   const [selectedModulIdx, setSelectedModulIdx] = useState(0);
-
-  // State untuk Simulasi Skenario
   const [selectedSkenarioIdx, setSelectedSkenarioIdx] = useState(0);
   const [pickedOptionIdx, setPickedOptionIdx] = useState(null);
 
-  // State untuk Jurnal
   const [j1, setJ1] = useState(jurnal?.q1_perasaan || "");
   const [j2, setJ2] = useState(jurnal?.q2_hal_dijaga || "");
   const [j3, setJ3] = useState(jurnal?.q3_pesan_aku || "");
 
-  // State untuk Form Konseling BK
   const [bkNama, setBkNama] = useState(user?.nama || "");
   const [bkKelas, setBkKelas] = useState(user?.kelas || "Kelas XI MIPA 1");
   const [bkTopik, setBkTopik] = useState("Menegaskan Batasan Diri (Asertif)");
   const [bkJadwal, setBkJadwal] = useState("Saat jam istirahat pertama (09.45 WIB)");
   const [bkKontak, setBkKontak] = useState(user?.email || "");
 
-  // State untuk Form Pengaduan
   const [aduJenis, setAduJenis] = useState("Saran isi");
   const [aduIsi, setAduIsi] = useState("");
 
@@ -75,7 +65,6 @@ export default function StudentViews({
       (progress?.jurnal_disimpan ? 10 : 0))
   );
 
-  // Filter konseling milik siswa ini
   const myKonseling = pendampinganList.filter(
     (item) =>
       item.kontak_siswa?.toLowerCase() === user?.email?.toLowerCase() ||
@@ -83,36 +72,36 @@ export default function StudentViews({
   );
 
   // -------------------------------------------------------------------------
-  // 1. BERANDA SISWA
+  // 1. BERANDA SISWA (PINK & HIJAU THEME)
   // -------------------------------------------------------------------------
   if (activeMenu === "beranda") {
     return (
       <div className="space-y-6">
-        {/* HERO WELCOME BANNER */}
-        <div className="rounded-3xl bg-gradient-to-r from-sky-500 via-cyan-500 to-emerald-500 p-6 sm:p-8 text-white shadow-lg shadow-sky-500/15 relative overflow-hidden">
+        {/* HERO WELCOME BANNER PINK-HIJAU */}
+        <div className="rounded-3xl bg-gradient-to-r from-pink-500 via-rose-500 to-emerald-500 p-6 sm:p-8 text-white shadow-lg shadow-pink-500/15 relative overflow-hidden">
           <div className="relative z-10 max-w-2xl space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-xs font-bold">
               <Sparkles className="w-3.5 h-3.5" />
               Ruang Belajar Pertemanan Remaja • {user?.kelas || "Siswa"}
             </div>
             <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
-              Halo, {user?.nama}! 👋
+              Halo, {user?.nama}! 🌸🌿
             </h1>
-            <p className="text-sky-50 text-sm sm:text-base leading-relaxed">
+            <p className="text-pink-50 text-sm sm:text-base leading-relaxed">
               Berteman secara sehat itu keterampilan yang bisa dilatih. Mari pelajari cara
               berkomunikasi asertif, menghargai privasi, dan membangun batas diri yang positif.
             </p>
             <div className="pt-2 flex flex-wrap gap-3">
               <button
                 onClick={() => setActiveMenu("modul")}
-                className="px-5 py-2.5 rounded-xl bg-white text-sky-700 font-bold text-sm shadow-sm hover:bg-sky-50 transition-all inline-flex items-center gap-2"
+                className="px-5 py-2.5 rounded-xl bg-white text-pink-600 font-bold text-sm shadow-sm hover:bg-pink-50 transition-all inline-flex items-center gap-2"
               >
                 <BookOpen className="w-4 h-4" />
                 Mulai Belajar Modul
               </button>
               <button
                 onClick={() => setActiveMenu("latihan")}
-                className="px-5 py-2.5 rounded-xl bg-sky-900/30 hover:bg-sky-900/40 text-white border border-white/30 font-bold text-sm transition-all inline-flex items-center gap-2"
+                className="px-5 py-2.5 rounded-xl bg-emerald-600/90 hover:bg-emerald-600 text-white border border-white/30 font-bold text-sm transition-all inline-flex items-center gap-2"
               >
                 <Lightbulb className="w-4 h-4" />
                 Simulasi Kasus
@@ -123,7 +112,7 @@ export default function StudentViews({
 
         {/* PROGRESS KPI GRID */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm flex items-center justify-between">
+          <div className="bg-white p-5 rounded-2xl border border-pink-200/80 shadow-sm flex items-center justify-between">
             <div>
               <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
                 Modul SEHAT
@@ -131,14 +120,14 @@ export default function StudentViews({
               <p className="text-2xl font-extrabold text-slate-900 mt-1">
                 {completedModulCount} / {moduls.length}
               </p>
-              <p className="text-xs text-sky-600 font-semibold mt-1">Modul dipelajari</p>
+              <p className="text-xs text-pink-600 font-semibold mt-1">Modul dipelajari</p>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-2xl bg-pink-100 text-pink-600 flex items-center justify-center">
               <BookOpen className="w-6 h-6" />
             </div>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm flex items-center justify-between">
+          <div className="bg-white p-5 rounded-2xl border border-emerald-200/80 shadow-sm flex items-center justify-between">
             <div>
               <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
                 Simulasi Kasus
@@ -153,7 +142,7 @@ export default function StudentViews({
             </div>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm flex items-center justify-between">
+          <div className="bg-white p-5 rounded-2xl border border-pink-200/80 shadow-sm flex items-center justify-between">
             <div>
               <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
                 Jurnal Refleksi
@@ -161,14 +150,14 @@ export default function StudentViews({
               <p className="text-2xl font-extrabold text-slate-900 mt-1">
                 {progress?.jurnal_disimpan ? "Tersimpan" : "Belum"}
               </p>
-              <p className="text-xs text-amber-600 font-semibold mt-1">Catatan refleksi diri</p>
+              <p className="text-xs text-rose-600 font-semibold mt-1">Catatan refleksi diri</p>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center">
               <PenTool className="w-6 h-6" />
             </div>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm flex items-center justify-between">
+          <div className="bg-white p-5 rounded-2xl border border-emerald-200/80 shadow-sm flex items-center justify-between">
             <div>
               <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
                 Total Progres
@@ -176,9 +165,9 @@ export default function StudentViews({
               <p className="text-2xl font-extrabold text-slate-900 mt-1">
                 {totalCompletionPercent}%
               </p>
-              <p className="text-xs text-indigo-600 font-semibold mt-1">Capaian belajar</p>
+              <p className="text-xs text-emerald-600 font-semibold mt-1">Capaian belajar</p>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-pink-100 to-emerald-100 text-emerald-700 flex items-center justify-center">
               <Award className="w-6 h-6" />
             </div>
           </div>
@@ -186,7 +175,7 @@ export default function StudentViews({
 
         {/* TWO COLUMNS: LEARNING ROADMAP & KONSELING STATUS */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-7 bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-4">
+          <div className="lg:col-span-7 bg-white rounded-3xl border border-pink-200/80 p-6 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-extrabold text-slate-900">
@@ -196,14 +185,14 @@ export default function StudentViews({
                   Ikuti 4 langkah terstruktur di bawah ini untuk hasil optimal:
                 </p>
               </div>
-              <span className="px-3 py-1 rounded-full bg-sky-100 text-sky-700 font-bold text-xs">
+              <span className="px-3 py-1 rounded-full bg-pink-100 text-pink-700 font-bold text-xs">
                 {totalCompletionPercent}% Selesai
               </span>
             </div>
 
-            <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+            <div className="w-full h-2.5 bg-pink-100/60 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-sky-500 to-emerald-500 transition-all duration-500"
+                className="h-full bg-gradient-to-r from-pink-500 to-emerald-500 transition-all duration-500"
                 style={{ width: `${totalCompletionPercent}%` }}
               />
             </div>
@@ -238,26 +227,26 @@ export default function StudentViews({
                 <div
                   key={i}
                   onClick={() => setActiveMenu(step.target)}
-                  className="p-4 rounded-2xl border border-slate-200 hover:border-sky-300 hover:bg-sky-50/40 transition-all flex items-center justify-between cursor-pointer group"
+                  className="p-4 rounded-2xl border border-pink-100 hover:border-pink-300 hover:bg-pink-50/40 transition-all flex items-center justify-between cursor-pointer group"
                 >
                   <div className="flex items-center gap-3.5">
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${
                         step.done
                           ? "bg-emerald-100 text-emerald-700"
-                          : "bg-slate-100 text-slate-600"
+                          : "bg-pink-100 text-pink-600"
                       }`}
                     >
                       {step.done ? <CheckCircle2 className="w-5 h-5" /> : i + 1}
                     </div>
                     <div>
-                      <h4 className="text-sm font-bold text-slate-900 group-hover:text-sky-700">
+                      <h4 className="text-sm font-bold text-slate-900 group-hover:text-pink-600">
                         {step.title}
                       </h4>
                       <p className="text-xs text-slate-500">{step.sub}</p>
                     </div>
                   </div>
-                  <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-sky-600 group-hover:translate-x-1 transition-all" />
+                  <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-pink-600 group-hover:translate-x-1 transition-all" />
                 </div>
               ))}
             </div>
@@ -265,7 +254,7 @@ export default function StudentViews({
 
           {/* RIGHT: STATUS KONSELING BK & NILAI INTI */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-4">
+            <div className="bg-white rounded-3xl border border-emerald-200/80 p-6 shadow-sm space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
                   <HeartHandshake className="w-5 h-5 text-emerald-600" />
@@ -273,18 +262,18 @@ export default function StudentViews({
                 </h3>
                 <button
                   onClick={() => setActiveMenu("bantuan")}
-                  className="text-xs font-bold text-sky-600 hover:underline"
+                  className="text-xs font-bold text-pink-600 hover:underline"
                 >
                   Ajukan Baru →
                 </button>
               </div>
 
               {myKonseling.length === 0 ? (
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs text-slate-600 space-y-2">
+                <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-200/80 text-xs text-slate-600 space-y-2">
                   <p>Kamu belum memiliki pengajuan jadwal konseling aktif dengan Guru BK.</p>
                   <button
                     onClick={() => setActiveMenu("bantuan")}
-                    className="px-3.5 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition-all inline-flex items-center gap-1.5"
+                    className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold text-xs hover:opacity-95 transition-all inline-flex items-center gap-1.5"
                   >
                     <Calendar className="w-3.5 h-3.5" />
                     Buat Janji Konseling
@@ -295,14 +284,14 @@ export default function StudentViews({
                   {myKonseling.slice(0, 2).map((k) => (
                     <div
                       key={k.id}
-                      className="p-4 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-1.5"
+                      className="p-4 rounded-2xl border border-pink-100 bg-pink-50/30 space-y-1.5"
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-extrabold text-slate-900">{k.topik}</span>
                         <span
                           className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
                             k.status === "Dijadwalkan"
-                              ? "bg-sky-100 text-sky-700"
+                              ? "bg-pink-100 text-pink-700"
                               : k.status === "Selesai"
                               ? "bg-emerald-100 text-emerald-700"
                               : "bg-amber-100 text-amber-800"
@@ -313,7 +302,7 @@ export default function StudentViews({
                       </div>
                       <p className="text-xs text-slate-500">Waktu: {k.jadwal_preferensi}</p>
                       {k.catatan_guru && (
-                        <div className="p-2.5 rounded-xl bg-sky-50 border border-sky-200 text-xs text-sky-900 mt-1">
+                        <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 mt-1">
                           <b>Pesan Guru BK:</b> {k.catatan_guru}
                         </div>
                       )}
@@ -323,9 +312,9 @@ export default function StudentViews({
               )}
             </div>
 
-            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl border border-emerald-200 p-6 space-y-2">
-              <div className="text-xs font-extrabold uppercase tracking-wider text-emerald-800">
-                💡 Komitmen Ruang Aman
+            <div className="bg-gradient-to-br from-pink-50 via-white to-emerald-50 rounded-3xl border border-pink-200 p-6 space-y-2">
+              <div className="text-xs font-extrabold uppercase tracking-wider text-pink-700">
+                🌸🌿 Komitmen Ruang Aman
               </div>
               <h3 className="text-base font-extrabold text-slate-900">
                 Saling Menghargai & Menjaga Batas Diri
@@ -353,14 +342,14 @@ export default function StudentViews({
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <span className="text-xs font-extrabold uppercase tracking-wider text-sky-600">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-pink-600">
               Kurikulum Psikoedukasi S-E-H-A-T
             </span>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
               Modul Keterampilan Pertemanan
             </h1>
           </div>
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-600 bg-white px-4 py-2 rounded-xl border border-slate-200">
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-600 bg-white px-4 py-2 rounded-xl border border-pink-200">
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />
             <span>
               {completedModulCount} dari {moduls.length} Modul Selesai
@@ -379,21 +368,21 @@ export default function StudentViews({
                 onClick={() => setSelectedModulIdx(idx)}
                 className={`p-3.5 rounded-2xl border text-left transition-all relative ${
                   active
-                    ? "bg-sky-600 text-white border-sky-600 shadow-md shadow-sky-500/20"
-                    : "bg-white text-slate-800 border-slate-200 hover:border-sky-300"
+                    ? "bg-gradient-to-br from-pink-500 to-rose-500 text-white border-pink-500 shadow-md shadow-pink-500/20"
+                    : "bg-white text-slate-800 border-pink-200/80 hover:border-pink-400"
                 }`}
               >
                 <div className="flex items-center justify-between mb-1.5">
                   <span
                     className={`text-xs font-extrabold px-2 py-0.5 rounded-md ${
-                      active ? "bg-white/20 text-white" : "bg-sky-100 text-sky-700"
+                      active ? "bg-white/20 text-white" : "bg-pink-100 text-pink-700"
                     }`}
                   >
                     0{idx + 1} • {m.kode}
                   </span>
                   {done && (
                     <CheckCircle2
-                      className={`w-4 h-4 ${active ? "text-emerald-300" : "text-emerald-500"}`}
+                      className={`w-4 h-4 ${active ? "text-emerald-200" : "text-emerald-500"}`}
                     />
                   )}
                 </div>
@@ -404,10 +393,10 @@ export default function StudentViews({
         </div>
 
         {/* ACTIVE MODULE READER CARD */}
-        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden">
-          <div className="bg-gradient-to-r from-sky-50 via-cyan-50 to-emerald-50 p-6 sm:p-8 border-b border-slate-200">
+        <div className="bg-white rounded-3xl border border-pink-200/90 shadow-sm overflow-hidden">
+          <div className="bg-gradient-to-r from-pink-50 via-white to-emerald-50 p-6 sm:p-8 border-b border-pink-200/70">
             <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-              <span className="px-3 py-1 rounded-full bg-sky-600 text-white text-xs font-extrabold">
+              <span className="px-3 py-1 rounded-full bg-gradient-to-r from-pink-500 to-emerald-500 text-white text-xs font-extrabold">
                 Modul 0{selectedModulIdx + 1} • Prinsip {activeModul.kode}
               </span>
               <span className="text-xs font-semibold text-slate-500 flex items-center gap-1">
@@ -421,7 +410,6 @@ export default function StudentViews({
           </div>
 
           <div className="p-6 sm:p-8 space-y-6">
-            {/* URAIAN MATERI */}
             <div className="space-y-3">
               <h3 className="text-base font-extrabold text-slate-900">📖 Penjelasan Materi</h3>
               <p className="text-slate-700 leading-relaxed text-sm sm:text-base">
@@ -429,11 +417,10 @@ export default function StudentViews({
               </p>
             </div>
 
-            {/* POIN UTAMA */}
             {activeModul.poinUtama && (
-              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2.5">
-                <h4 className="text-sm font-extrabold text-slate-900">
-                  ✨ Poin Kunci yang Perlu Diingat:
+              <div className="p-5 rounded-2xl bg-emerald-50/60 border border-emerald-200 space-y-2.5">
+                <h4 className="text-sm font-extrabold text-emerald-950">
+                  🌿 Poin Kunci yang Perlu Diingat:
                 </h4>
                 <ul className="space-y-2">
                   {activeModul.poinUtama.map((pt, i) => (
@@ -446,15 +433,14 @@ export default function StudentViews({
               </div>
             )}
 
-            {/* DIALOG INTERAKTIF */}
             {activeModul.dialog && (
-              <div className="p-5 rounded-2xl bg-sky-50/70 border border-sky-200 space-y-3">
+              <div className="p-5 rounded-2xl bg-pink-50/60 border border-pink-200 space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-extrabold text-sky-950 flex items-center gap-2">
-                    <MessageCircle className="w-4 h-4 text-sky-600" />
+                  <h4 className="text-sm font-extrabold text-pink-950 flex items-center gap-2">
+                    <MessageCircle className="w-4 h-4 text-pink-600" />
                     Contoh Dialog Nyata
                   </h4>
-                  <span className="text-xs text-sky-700 font-medium">
+                  <span className="text-xs text-pink-700 font-medium">
                     Situasi: {activeModul.dialog.situasi}
                   </span>
                 </div>
@@ -464,13 +450,13 @@ export default function StudentViews({
                       key={idx}
                       className={`p-3.5 rounded-2xl text-sm ${
                         idx % 2 === 0
-                          ? "bg-white border border-sky-200 text-slate-800 mr-6"
-                          : "bg-sky-600 text-white ml-6"
+                          ? "bg-white border border-pink-200 text-slate-800 mr-6"
+                          : "bg-gradient-to-r from-pink-500 to-rose-500 text-white ml-6"
                       }`}
                     >
                       <div
                         className={`text-xs font-extrabold mb-0.5 ${
-                          idx % 2 === 0 ? "text-sky-600" : "text-sky-100"
+                          idx % 2 === 0 ? "text-pink-600" : "text-pink-100"
                         }`}
                       >
                         {chat.pelaku}
@@ -482,26 +468,24 @@ export default function StudentViews({
               </div>
             )}
 
-            {/* TANTANGAN AKSI */}
-            <div className="p-5 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 font-bold">
+            <div className="p-5 rounded-2xl bg-gradient-to-r from-pink-50 to-emerald-50 border border-emerald-200 flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-emerald-500 text-white flex items-center justify-center shrink-0 font-bold">
                 🎯
               </div>
               <div>
-                <h4 className="text-sm font-extrabold text-amber-950">
+                <h4 className="text-sm font-extrabold text-slate-900">
                   Tantangan Praktik Hari Ini
                 </h4>
-                <p className="text-sm text-amber-900 mt-0.5">{activeModul.tantangan}</p>
+                <p className="text-sm text-slate-700 mt-0.5">{activeModul.tantangan}</p>
               </div>
             </div>
 
-            {/* FOOTER BUTTONS */}
             <div className="pt-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
               <button
                 type="button"
                 disabled={selectedModulIdx === 0}
                 onClick={() => setSelectedModulIdx(Math.max(0, selectedModulIdx - 1))}
-                className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-bold text-sm hover:bg-slate-100 disabled:opacity-40 inline-flex items-center gap-2"
+                className="px-4 py-2.5 rounded-xl border border-pink-200 text-slate-700 font-bold text-sm hover:bg-pink-50 disabled:opacity-40 inline-flex items-center gap-2"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Modul Sebelumnya
@@ -528,7 +512,7 @@ export default function StudentViews({
                       onMarkModulDone(selectedModulIdx);
                       setSelectedModulIdx(selectedModulIdx + 1);
                     }}
-                    className="px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm shadow-sm inline-flex items-center gap-2"
+                    className="px-5 py-2.5 rounded-xl bg-pink-500 hover:bg-pink-600 text-white font-bold text-sm shadow-sm inline-flex items-center gap-2"
                   >
                     <span>Modul Berikutnya</span>
                     <ArrowRight className="w-4 h-4" />
@@ -540,7 +524,7 @@ export default function StudentViews({
                       onMarkModulDone(selectedModulIdx);
                       setActiveMenu("latihan");
                     }}
-                    className="px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm shadow-sm inline-flex items-center gap-2"
+                    className="px-5 py-2.5 rounded-xl bg-pink-500 hover:bg-pink-600 text-white font-bold text-sm shadow-sm inline-flex items-center gap-2"
                   >
                     <span>Lanjut ke Simulasi Kasus</span>
                     <ArrowRight className="w-4 h-4" />
@@ -572,18 +556,17 @@ export default function StudentViews({
               Simulasi Kasus Pertemanan
             </h1>
           </div>
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-600 bg-white px-4 py-2 rounded-xl border border-slate-200">
-            <Lightbulb className="w-4 h-4 text-amber-500" />
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-600 bg-white px-4 py-2 rounded-xl border border-emerald-200">
+            <Lightbulb className="w-4 h-4 text-pink-500" />
             <span>
               {completedSkenarioCount} dari {skenarios.length} Skenario Dicoba
             </span>
           </div>
         </div>
 
-        {/* SAFETY DISCLAIMER BANNER */}
-        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 text-xs sm:text-sm text-amber-900">
-            <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0" />
+        <div className="p-4 rounded-2xl bg-pink-50 border border-pink-200 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 text-xs sm:text-sm text-pink-950">
+            <ShieldAlert className="w-5 h-5 text-pink-600 shrink-0" />
             <span>
               <b>Catatan Keselamatan:</b> Seluruh tokoh di bawah ini adalah rekaan untuk latihan.
               Jika kamu mengalami ancaman nyata, langsung gunakan menu <b>Konseling Guru BK</b>.
@@ -591,14 +574,13 @@ export default function StudentViews({
           </div>
           <button
             onClick={() => setActiveMenu("bantuan")}
-            className="shrink-0 px-3 py-1.5 rounded-xl bg-amber-600 text-white font-bold text-xs hover:bg-amber-700"
+            className="shrink-0 px-3 py-1.5 rounded-xl bg-pink-600 text-white font-bold text-xs hover:bg-pink-700"
           >
             Bantuan BK
           </button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* LEFT LIST OF SCENARIOS */}
           <div className="lg:col-span-4 space-y-2.5">
             <div className="text-xs font-extrabold uppercase tracking-wider text-slate-400 px-1">
               Daftar 6 Skenario Kasus
@@ -615,14 +597,14 @@ export default function StudentViews({
                   }}
                   className={`w-full p-4 rounded-2xl border text-left transition-all flex items-start justify-between gap-3 ${
                     isCurrent
-                      ? "bg-sky-600 text-white border-sky-600 shadow-md"
-                      : "bg-white text-slate-800 border-slate-200 hover:border-sky-300"
+                      ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white border-pink-500 shadow-md"
+                      : "bg-white text-slate-800 border-pink-200/80 hover:border-pink-400"
                   }`}
                 >
                   <div>
                     <div
                       className={`text-[11px] font-bold uppercase ${
-                        isCurrent ? "text-sky-100" : "text-slate-400"
+                        isCurrent ? "text-pink-100" : "text-slate-400"
                       }`}
                     >
                       Skenario 0{idx + 1} • {sk.kategori}
@@ -632,7 +614,7 @@ export default function StudentViews({
                   {done && (
                     <CheckCircle2
                       className={`w-5 h-5 shrink-0 ${
-                        isCurrent ? "text-emerald-300" : "text-emerald-500"
+                        isCurrent ? "text-emerald-200" : "text-emerald-500"
                       }`}
                     />
                   )}
@@ -641,10 +623,9 @@ export default function StudentViews({
             })}
           </div>
 
-          {/* RIGHT ACTIVE SCENARIO PLAYGROUND */}
           <div className="lg:col-span-8">
-            <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-6">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div className="bg-white rounded-3xl border border-pink-200/80 p-6 sm:p-8 shadow-sm space-y-6">
+              <div className="flex items-center justify-between border-b border-pink-100 pb-4">
                 <div>
                   <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 font-extrabold text-xs">
                     Studi Kasus 0{selectedSkenarioIdx + 1}
@@ -653,22 +634,20 @@ export default function StudentViews({
                     {activeSk.judul}
                   </h2>
                 </div>
-                <span className="text-xs font-bold px-3 py-1 rounded-lg bg-slate-100 text-slate-600">
+                <span className="text-xs font-bold px-3 py-1 rounded-lg bg-pink-50 text-pink-700">
                   Level: {activeSk.tingkat || "Menengah"}
                 </span>
               </div>
 
-              {/* CERITA KASUS */}
-              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+              <div className="p-5 rounded-2xl bg-pink-50/40 border border-pink-200/70 space-y-3">
                 <p className="text-slate-800 text-sm sm:text-base leading-relaxed">
                   {activeSk.cerita}
                 </p>
-                <div className="pt-2 border-t border-slate-200/80 text-sm font-extrabold text-sky-900">
+                <div className="pt-2 border-t border-pink-200/60 text-sm font-extrabold text-pink-900">
                   ❓ {activeSk.pertanyaan}
                 </div>
               </div>
 
-              {/* PILIHAN OPSI A, B, C */}
               <div className="space-y-3">
                 <div className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
                   Pilih Respons yang Menurutmu Paling Tepat:
@@ -687,8 +666,8 @@ export default function StudentViews({
                         isSelected
                           ? op.skor === "ok"
                             ? "border-emerald-500 bg-emerald-50/70"
-                            : "border-amber-500 bg-amber-50/70"
-                          : "border-slate-200 hover:border-sky-400 bg-white"
+                            : "border-pink-500 bg-pink-50/70"
+                          : "border-slate-200 hover:border-pink-400 bg-white"
                       }`}
                     >
                       <span
@@ -696,8 +675,8 @@ export default function StudentViews({
                           isSelected
                             ? op.skor === "ok"
                               ? "bg-emerald-600 text-white"
-                              : "bg-amber-600 text-white"
-                            : "bg-slate-100 text-slate-700"
+                              : "bg-pink-600 text-white"
+                            : "bg-pink-50 text-pink-700"
                         }`}
                       >
                         {op.label}
@@ -708,13 +687,12 @@ export default function StudentViews({
                 })}
               </div>
 
-              {/* PANEL ANALISIS PSIKOLOGIS (MUNCUL SAAT OPSI DIPILIH) */}
               {pickedObj && (
                 <div
                   className={`p-6 rounded-2xl border-2 space-y-3 transition-all ${
                     pickedObj.skor === "ok"
                       ? "bg-emerald-50 border-emerald-300 text-emerald-950"
-                      : "bg-amber-50 border-amber-300 text-amber-950"
+                      : "bg-pink-50 border-pink-300 text-pink-950"
                   }`}
                 >
                   <div className="flex items-center justify-between">
@@ -747,7 +725,7 @@ export default function StudentViews({
                           setSelectedSkenarioIdx(selectedSkenarioIdx + 1);
                           setPickedOptionIdx(null);
                         }}
-                        className="px-4 py-2 rounded-xl bg-sky-600 text-white font-bold text-xs hover:bg-sky-700 inline-flex items-center gap-1.5"
+                        className="px-4 py-2 rounded-xl bg-pink-500 text-white font-bold text-xs hover:bg-pink-600 inline-flex items-center gap-1.5"
                       >
                         <span>Skenario Berikutnya</span>
                         <ArrowRight className="w-3.5 h-3.5" />
@@ -780,7 +758,7 @@ export default function StudentViews({
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 no-print">
           <div>
-            <span className="text-xs font-extrabold uppercase tracking-wider text-sky-600">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-pink-600">
               Ringkasan Satu Halaman
             </span>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
@@ -793,7 +771,7 @@ export default function StudentViews({
                 onMarkKartuOpened();
                 window.print();
               }}
-              className="px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm shadow-sm inline-flex items-center gap-2"
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-emerald-500 hover:opacity-95 text-white font-bold text-sm shadow-sm inline-flex items-center gap-2"
             >
               <Printer className="w-4 h-4" />
               Cetak / Simpan PDF
@@ -801,21 +779,20 @@ export default function StudentViews({
           </div>
         </div>
 
-        {/* PRINTABLE POSTER CARD */}
-        <div className="bg-white rounded-3xl border-2 border-sky-400 shadow-xl overflow-hidden">
-          <div className="bg-gradient-to-r from-sky-600 via-cyan-600 to-emerald-600 p-6 sm:p-8 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="bg-white rounded-3xl border-2 border-pink-400 shadow-xl overflow-hidden">
+          <div className="bg-gradient-to-r from-pink-500 via-rose-500 to-emerald-500 p-6 sm:p-8 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <div className="text-xs font-extrabold uppercase tracking-widest text-sky-100">
+              <div className="text-xs font-extrabold uppercase tracking-widest text-pink-100">
                 TEMANSEHAT • PANDUAN SAKU PERTEMANAN REMAJA
               </div>
               <h2 className="text-3xl font-extrabold mt-1">KARTU PRINSIP S-E-H-A-T</h2>
-              <p className="text-sky-100 text-sm mt-1">
+              <p className="text-pink-50 text-sm mt-1">
                 Lima pengingat harian untuk membangun relasi pertemanan yang aman, setara, dan
                 saling menghormati.
               </p>
             </div>
             <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-3xl font-black shrink-0">
-              🤝
+              🌸🌿
             </div>
           </div>
 
@@ -825,7 +802,7 @@ export default function StudentViews({
                 letter: "S",
                 title: "Sapa dan Komunikasi Asertif",
                 desc: "Mulai percakapan dengan ramah, dengarkan secara aktif tanpa menyela, dan tanyakan langsung dengan lembut bila ada kesalahpahaman.",
-                color: "bg-sky-100 text-sky-700 border-sky-200"
+                color: "bg-pink-100 text-pink-700 border-pink-200"
               },
               {
                 letter: "E",
@@ -837,24 +814,24 @@ export default function StudentViews({
                 letter: "H",
                 title: "Hati Terbuka & Batas Privasi",
                 desc: "Berbagi cerita secara bijak sesuai lingkaran kepercayaan. Jaga kerahasiaan pribadi dirimu maupun cerita yang dipercayakan teman.",
-                color: "bg-amber-100 text-amber-800 border-amber-200"
+                color: "bg-rose-100 text-rose-700 border-rose-200"
               },
               {
                 letter: "A",
                 title: "Andal dan Saling Percaya",
                 desc: "Tepati janji-janji kecil, jujur saat berhalangan, dan bangun integritas antara ucapan di depan maupun di belakang teman.",
-                color: "bg-indigo-100 text-indigo-700 border-indigo-200"
+                color: "bg-teal-100 text-teal-800 border-teal-200"
               },
               {
                 letter: "T",
                 title: "Topang dan Rujukan Bantuan",
                 desc: "Hadir mendukung teman di masa sulit, dan segera libatkan Guru BK atau orang dewasa tepercaya bila menyangkut keselamatan diri.",
-                color: "bg-teal-100 text-teal-800 border-teal-200"
+                color: "bg-pink-100 text-pink-700 border-pink-200"
               }
             ].map((row, idx) => (
               <div
                 key={idx}
-                className="p-4 rounded-2xl border border-slate-200 flex items-start gap-4 bg-slate-50/50"
+                className="p-4 rounded-2xl border border-pink-100 flex items-start gap-4 bg-pink-50/30"
               >
                 <div
                   className={`w-12 h-12 rounded-2xl border font-black text-xl flex items-center justify-center shrink-0 ${row.color}`}
@@ -868,7 +845,7 @@ export default function StudentViews({
               </div>
             ))}
 
-            <div className="p-5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-950 space-y-1">
+            <div className="p-5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 space-y-1">
               <div className="text-sm font-extrabold flex items-center gap-2">
                 🛡️ Formula Menegaskan Batas Diri (Pesan Aku / I-Message):
               </div>
@@ -892,7 +869,7 @@ export default function StudentViews({
     return (
       <div className="space-y-6">
         <div>
-          <span className="text-xs font-extrabold uppercase tracking-wider text-amber-600">
+          <span className="text-xs font-extrabold uppercase tracking-wider text-pink-600">
             Refleksi & Kesadaran Diri
           </span>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
@@ -904,7 +881,7 @@ export default function StudentViews({
           </p>
         </div>
 
-        <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-5">
+        <div className="bg-white rounded-3xl border border-pink-200/80 p-6 sm:p-8 shadow-sm space-y-5">
           <div>
             <label className="block text-sm font-extrabold text-slate-900 mb-2">
               1. Apa perasaan atau pelajaran terpenting yang kamu dapatkan setelah mempelajari
@@ -915,7 +892,7 @@ export default function StudentViews({
               value={j1}
               onChange={(e) => setJ1(e.target.value)}
               placeholder="Contoh: Saya menyadari bahwa selama ini saya sering sungkan menolak permintaan teman meskipun saya sedang keberatan..."
-              className="w-full p-4 rounded-2xl border border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none text-sm"
+              className="w-full p-4 rounded-2xl border border-pink-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 outline-none text-sm"
             />
           </div>
 
@@ -928,7 +905,7 @@ export default function StudentViews({
               value={j2}
               onChange={(e) => setJ2(e.target.value)}
               placeholder="Contoh: Menjaga rahasia teman, tidak ikut menyindir di media sosial, dan menghargai waktu belajar..."
-              className="w-full p-4 rounded-2xl border border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none text-sm"
+              className="w-full p-4 rounded-2xl border border-pink-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 outline-none text-sm"
             />
           </div>
 
@@ -942,7 +919,7 @@ export default function StudentViews({
               value={j3}
               onChange={(e) => setJ3(e.target.value)}
               placeholder="Contoh: 'Aku merasa kurang nyaman kalau barangku dipakai tanpa izin. Tolong tanya aku dulu ya sebelum meminjam.'"
-              className="w-full p-4 rounded-2xl border border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none text-sm"
+              className="w-full p-4 rounded-2xl border border-pink-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 outline-none text-sm"
             />
           </div>
 
@@ -973,7 +950,7 @@ export default function StudentViews({
                   true
                 )
               }
-              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-emerald-600 hover:from-sky-600 hover:to-emerald-700 text-white font-bold text-sm shadow-md inline-flex items-center gap-2"
+              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-emerald-500 hover:opacity-95 text-white font-bold text-sm shadow-md inline-flex items-center gap-2"
             >
               <Save className="w-4 h-4" />
               Simpan Jurnal Refleksi
@@ -1014,9 +991,8 @@ export default function StudentViews({
           </p>
         </div>
 
-        {/* EMERGENCY WARNING */}
-        <div className="p-5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-950 flex items-start gap-3.5">
-          <ShieldAlert className="w-6 h-6 text-rose-600 shrink-0 mt-0.5" />
+        <div className="p-5 rounded-2xl bg-pink-50 border border-pink-200 text-pink-950 flex items-start gap-3.5">
+          <ShieldAlert className="w-6 h-6 text-pink-600 shrink-0 mt-0.5" />
           <div className="text-xs sm:text-sm leading-relaxed">
             <b>Penting — Kondisi Darurat:</b> Apabila kamu menghadapi kekerasan fisik, ancaman
             keselamatan, atau keinginan menyakiti diri, segera temui Guru BK, wali kelas, orang tua,
@@ -1025,8 +1001,7 @@ export default function StudentViews({
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* FORM PENGAJUAN */}
-          <div className="lg:col-span-6 bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm">
+          <div className="lg:col-span-6 bg-white rounded-3xl border border-emerald-200/80 p-6 shadow-sm">
             <h2 className="text-lg font-extrabold text-slate-900 mb-1">
               📅 Formulir Permohonan Konseling
             </h2>
@@ -1044,7 +1019,7 @@ export default function StudentViews({
                   required
                   value={bkNama}
                   onChange={(e) => setBkNama(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm outline-none focus:border-sky-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-pink-200 text-sm outline-none focus:border-pink-500"
                 />
               </div>
 
@@ -1056,7 +1031,7 @@ export default function StudentViews({
                   <select
                     value={bkKelas}
                     onChange={(e) => setBkKelas(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white outline-none focus:border-sky-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-pink-200 text-sm bg-white outline-none focus:border-pink-500"
                   >
                     <option>Kelas X Merdeka 1</option>
                     <option>Kelas X Merdeka 2</option>
@@ -1075,7 +1050,7 @@ export default function StudentViews({
                   <select
                     value={bkJadwal}
                     onChange={(e) => setBkJadwal(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white outline-none focus:border-sky-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-pink-200 text-sm bg-white outline-none focus:border-pink-500"
                   >
                     <option>Saat jam istirahat pertama (09.45 WIB)</option>
                     <option>Jam istirahat kedua (12.15 WIB)</option>
@@ -1092,7 +1067,7 @@ export default function StudentViews({
                 <select
                   value={bkTopik}
                   onChange={(e) => setBkTopik(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white outline-none focus:border-sky-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-pink-200 text-sm bg-white outline-none focus:border-pink-500"
                 >
                   <option>Menegaskan Batasan Diri (Asertif)</option>
                   <option>Konflik dengan Teman Sebaya</option>
@@ -1111,7 +1086,7 @@ export default function StudentViews({
                   value={bkKontak}
                   onChange={(e) => setBkKontak(e.target.value)}
                   placeholder="Email atau Nomor WA untuk dihubungi"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm outline-none focus:border-sky-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-pink-200 text-sm outline-none focus:border-pink-500"
                 />
               </div>
 
@@ -1125,8 +1100,7 @@ export default function StudentViews({
             </form>
           </div>
 
-          {/* RIWAYAT PENGAJUAN KONSELING */}
-          <div className="lg:col-span-6 bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-4">
+          <div className="lg:col-span-6 bg-white rounded-3xl border border-pink-200/80 p-6 shadow-sm space-y-4">
             <h2 className="text-lg font-extrabold text-slate-900">
               📋 Status & Balasan Jadwal Konseling
             </h2>
@@ -1138,7 +1112,7 @@ export default function StudentViews({
               {pendampinganList.map((item) => (
                 <div
                   key={item.id}
-                  className="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 space-y-2"
+                  className="p-4 rounded-2xl border border-pink-100 bg-pink-50/30 space-y-2"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
@@ -1146,12 +1120,12 @@ export default function StudentViews({
                         {item.nama_siswa}{" "}
                         <span className="text-xs font-medium text-slate-500">({item.kelas})</span>
                       </span>
-                      <div className="text-xs font-bold text-sky-700 mt-0.5">{item.topik}</div>
+                      <div className="text-xs font-bold text-pink-600 mt-0.5">{item.topik}</div>
                     </div>
                     <span
                       className={`px-2.5 py-1 rounded-full text-xs font-extrabold ${
                         item.status === "Dijadwalkan"
-                          ? "bg-sky-100 text-sky-700"
+                          ? "bg-pink-100 text-pink-700"
                           : item.status === "Selesai"
                           ? "bg-emerald-100 text-emerald-700"
                           : "bg-amber-100 text-amber-800"
@@ -1198,7 +1172,7 @@ export default function StudentViews({
     return (
       <div className="space-y-6">
         <div>
-          <span className="text-xs font-extrabold uppercase tracking-wider text-sky-600">
+          <span className="text-xs font-extrabold uppercase tracking-wider text-pink-600">
             Suara Pengguna
           </span>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
@@ -1211,7 +1185,7 @@ export default function StudentViews({
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-5 bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm">
+          <div className="lg:col-span-5 bg-white rounded-3xl border border-pink-200/80 p-6 shadow-sm">
             <h2 className="text-lg font-extrabold text-slate-900 mb-4">
               📮 Kirim Masukan Baru
             </h2>
@@ -1223,7 +1197,7 @@ export default function StudentViews({
                 <select
                   value={aduJenis}
                   onChange={(e) => setAduJenis(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white outline-none focus:border-sky-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-pink-200 text-sm bg-white outline-none focus:border-pink-500"
                 >
                   <option>Saran isi</option>
                   <option>Kendala teknis</option>
@@ -1241,13 +1215,13 @@ export default function StudentViews({
                   value={aduIsi}
                   onChange={(e) => setAduIsi(e.target.value)}
                   placeholder="Tuliskan saran topik modul baru atau kendala penggunaan aplikasi..."
-                  className="w-full p-3.5 rounded-xl border border-slate-300 text-sm outline-none focus:border-sky-500"
+                  className="w-full p-3.5 rounded-xl border border-pink-200 text-sm outline-none focus:border-pink-500"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3 px-5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm shadow-md inline-flex items-center justify-center gap-2"
+                className="w-full py-3 px-5 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold text-sm shadow-md inline-flex items-center justify-center gap-2"
               >
                 <Send className="w-4 h-4" />
                 Kirim ke Administrator
@@ -1255,7 +1229,7 @@ export default function StudentViews({
             </form>
           </div>
 
-          <div className="lg:col-span-7 bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-4">
+          <div className="lg:col-span-7 bg-white rounded-3xl border border-emerald-200/80 p-6 shadow-sm space-y-4">
             <h2 className="text-lg font-extrabold text-slate-900">
               💬 Daftar Masukan & Tanggapan Admin
             </h2>
@@ -1263,10 +1237,10 @@ export default function StudentViews({
               {pengaduanList.map((ad) => (
                 <div
                   key={ad.id}
-                  className="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 space-y-2"
+                  className="p-4 rounded-2xl border border-pink-100 bg-pink-50/30 space-y-2"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-extrabold uppercase tracking-wider text-sky-700">
+                    <span className="text-xs font-extrabold uppercase tracking-wider text-pink-700">
                       {ad.jenis}
                     </span>
                     <span
@@ -1274,7 +1248,7 @@ export default function StudentViews({
                         ad.status === "Selesai"
                           ? "bg-emerald-100 text-emerald-700"
                           : ad.status === "Diproses"
-                          ? "bg-sky-100 text-sky-700"
+                          ? "bg-pink-100 text-pink-700"
                           : "bg-amber-100 text-amber-800"
                       }`}
                     >
@@ -1283,7 +1257,7 @@ export default function StudentViews({
                   </div>
                   <p className="text-sm text-slate-800">{ad.isi}</p>
                   {ad.tanggapan_admin && (
-                    <div className="p-3 rounded-xl bg-sky-50 border border-sky-200 text-xs text-sky-950">
+                    <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950">
                       <b className="block mb-0.5">👑 Tanggapan Admin:</b>
                       {ad.tanggapan_admin}
                     </div>

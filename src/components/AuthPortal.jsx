@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import {
@@ -119,7 +119,6 @@ export default function AuthPortal({
         setLoading(false);
       }
     } else {
-      // Login Guru BK atau Admin
       const cleanEmail = email.trim().toLowerCase();
       const cleanPw = password.trim();
 
@@ -154,7 +153,6 @@ export default function AuthPortal({
               ? "Dr. Hendra Wijaya (Admin)"
               : "Aulia Maharani (Admin)";
         } else {
-          // Cek dari database profiles jika sudah dipromosikan oleh Admin
           const allProfiles = await fetchProfiles();
           const matched = allProfiles.find((p) => p.email === cleanEmail);
           if (matched && (matched.role === roleTab || matched.role === "admin")) {
@@ -189,20 +187,20 @@ export default function AuthPortal({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-emerald-50 flex flex-col justify-between">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-emerald-50 flex flex-col justify-between">
       {/* TOP BAR */}
-      <header className="w-full border-b border-slate-200/80 bg-white/80 backdrop-blur-md sticky top-0 z-30">
+      <header className="w-full border-b border-pink-200/70 bg-white/85 backdrop-blur-md sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-emerald-500 flex items-center justify-center text-white shadow-md shadow-sky-500/20">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-pink-500 to-emerald-500 flex items-center justify-center text-white shadow-md shadow-pink-500/20">
               <HeartHandshake className="w-6 h-6" />
             </div>
             <div>
               <span className="text-xl font-extrabold tracking-tight text-slate-900">
-                Teman<span className="text-sky-600">Sehat</span>
+                Teman<span className="text-pink-600">Sehat</span>
               </span>
-              <span className="hidden sm:inline-block ml-2 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-700">
-                EdTech & Counseling Portal
+              <span className="hidden sm:inline-block ml-2 text-xs font-bold px-2.5 py-0.5 rounded-full bg-gradient-to-r from-pink-100 to-emerald-100 text-pink-700 border border-pink-200">
+                Pink & Green Edition
               </span>
             </div>
           </div>
@@ -211,17 +209,17 @@ export default function AuthPortal({
             onClick={onOpenDbModal}
             className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all ${
               isOnline
-                ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
-                : "bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100"
+                ? "bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100"
+                : "bg-pink-50 text-pink-700 border-pink-300 hover:bg-pink-100"
             }`}
           >
             <span
               className={`w-2 h-2 rounded-full ${
-                isOnline ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
+                isOnline ? "bg-emerald-500 animate-pulse" : "bg-pink-500 animate-ping"
               }`}
             />
             <Database className="w-3.5 h-3.5" />
-            {isOnline ? "Supabase Cloud Aktif" : "Mode Lokal / Demo (Klik Atur DB)"}
+            {isOnline ? "Supabase Cloud Aktif" : "Setup Database Supabase ⚙️"}
           </button>
         </div>
       </header>
@@ -231,14 +229,14 @@ export default function AuthPortal({
         <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           {/* LEFT COLUMN: BRANDING & QUICK DEMO */}
           <div className="lg:col-span-7 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-100/80 border border-sky-200 text-sky-800 text-xs font-bold">
-              <Sparkles className="w-4 h-4 text-sky-600" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-pink-100/90 border border-pink-200 text-pink-800 text-xs font-bold">
+              <Sparkles className="w-4 h-4 text-pink-600" />
               Platform Psikoedukasi Remaja & Bimbingan Konseling Sekolah
             </div>
 
             <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
               Bangun Pertemanan yang{" "}
-              <span className="bg-gradient-to-r from-sky-600 via-cyan-600 to-emerald-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-pink-500 via-rose-500 to-emerald-500 bg-clip-text text-transparent">
                 Sehat, Asertif, dan Saling Menghargai.
               </span>
             </h1>
@@ -251,8 +249,8 @@ export default function AuthPortal({
 
             {/* 3 PILLAR CARDS */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-              <div className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-sm">
-                <div className="w-9 h-9 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center mb-3">
+              <div className="p-4 rounded-2xl bg-white border border-pink-200/80 shadow-sm">
+                <div className="w-9 h-9 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center mb-3">
                   <BookOpen className="w-5 h-5" />
                 </div>
                 <h3 className="font-bold text-slate-900 text-sm">6 Modul & Simulasi</h3>
@@ -261,7 +259,7 @@ export default function AuthPortal({
                 </p>
               </div>
 
-              <div className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-sm">
+              <div className="p-4 rounded-2xl bg-white border border-emerald-200/80 shadow-sm">
                 <div className="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center mb-3">
                   <GraduationCap className="w-5 h-5" />
                 </div>
@@ -271,8 +269,8 @@ export default function AuthPortal({
                 </p>
               </div>
 
-              <div className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-sm">
-                <div className="w-9 h-9 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center mb-3">
+              <div className="p-4 rounded-2xl bg-white border border-pink-200/80 shadow-sm">
+                <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-pink-100 to-emerald-100 text-pink-700 flex items-center justify-center mb-3">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <h3 className="font-bold text-slate-900 text-sm">Kontrol Penuh Admin</h3>
@@ -283,9 +281,9 @@ export default function AuthPortal({
             </div>
 
             {/* 1-CLICK INSTANT DEMO LOGIN */}
-            <div className="p-5 rounded-2xl bg-gradient-to-r from-sky-500/10 via-cyan-500/10 to-emerald-500/10 border border-sky-200/80">
+            <div className="p-5 rounded-2xl bg-gradient-to-r from-pink-500/10 via-rose-500/10 to-emerald-500/10 border border-pink-200">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-extrabold uppercase tracking-wider text-sky-900">
+                <span className="text-xs font-extrabold uppercase tracking-wider text-pink-900">
                   ⚡ Akses Demo Instan (1-Klik Langsung Masuk)
                 </span>
                 <span className="text-xs text-slate-500">Tanpa perlu mengetik</span>
@@ -294,13 +292,13 @@ export default function AuthPortal({
                 <button
                   type="button"
                   onClick={() => handleQuickDemo("siswa")}
-                  className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-white hover:bg-sky-50 text-slate-800 border border-sky-200 shadow-sm transition-all text-left group"
+                  className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-white hover:bg-pink-50 text-slate-800 border border-pink-200 shadow-sm transition-all text-left group"
                 >
                   <div>
-                    <div className="text-xs font-bold text-sky-600">Role 1</div>
+                    <div className="text-xs font-bold text-pink-600">Role 1</div>
                     <div className="text-sm font-extrabold text-slate-900">Masuk Siswa</div>
                   </div>
-                  <ArrowRight className="w-4 h-4 text-sky-500 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-4 h-4 text-pink-500 group-hover:translate-x-1 transition-transform" />
                 </button>
 
                 <button
@@ -318,13 +316,13 @@ export default function AuthPortal({
                 <button
                   type="button"
                   onClick={() => handleQuickDemo("admin")}
-                  className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-white hover:bg-amber-50 text-slate-800 border border-amber-200 shadow-sm transition-all text-left group"
+                  className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-white hover:bg-pink-50 text-slate-800 border border-pink-300 shadow-sm transition-all text-left group"
                 >
                   <div>
-                    <div className="text-xs font-bold text-amber-600">Role 3 (Full)</div>
+                    <div className="text-xs font-bold text-rose-600">Role 3 (Full)</div>
                     <div className="text-sm font-extrabold text-slate-900">Masuk Admin</div>
                   </div>
-                  <ArrowRight className="w-4 h-4 text-amber-500 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-4 h-4 text-rose-500 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
             </div>
@@ -332,7 +330,7 @@ export default function AuthPortal({
 
           {/* RIGHT COLUMN: AUTH CARD */}
           <div className="lg:col-span-5">
-            <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xl shadow-sky-950/5 p-6 sm:p-8">
+            <div className="bg-white rounded-3xl border-2 border-pink-200/80 shadow-xl shadow-pink-950/5 p-6 sm:p-8">
               <div className="mb-6">
                 <h2 className="text-2xl font-extrabold text-slate-900">Masuk ke Portal</h2>
                 <p className="text-sm text-slate-500 mt-1">
@@ -341,14 +339,14 @@ export default function AuthPortal({
               </div>
 
               {/* 3 ROLE TABS */}
-              <div className="grid grid-cols-3 gap-1.5 p-1.5 bg-slate-100 rounded-2xl mb-6">
+              <div className="grid grid-cols-3 gap-1.5 p-1.5 bg-pink-50/80 border border-pink-100 rounded-2xl mb-6">
                 <button
                   type="button"
                   onClick={() => handleRoleSwitch("siswa")}
                   className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                     roleTab === "siswa"
-                      ? "bg-white text-sky-600 shadow-sm"
-                      : "text-slate-600 hover:text-slate-900"
+                      ? "bg-pink-500 text-white shadow-sm"
+                      : "text-slate-600 hover:text-pink-600"
                   }`}
                 >
                   <Users className="w-4 h-4" />
@@ -359,8 +357,8 @@ export default function AuthPortal({
                   onClick={() => handleRoleSwitch("guru")}
                   className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                     roleTab === "guru"
-                      ? "bg-white text-emerald-600 shadow-sm"
-                      : "text-slate-600 hover:text-slate-900"
+                      ? "bg-emerald-500 text-white shadow-sm"
+                      : "text-slate-600 hover:text-emerald-600"
                   }`}
                 >
                   <GraduationCap className="w-4 h-4" />
@@ -371,8 +369,8 @@ export default function AuthPortal({
                   onClick={() => handleRoleSwitch("admin")}
                   className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                     roleTab === "admin"
-                      ? "bg-white text-amber-600 shadow-sm"
-                      : "text-slate-600 hover:text-slate-900"
+                      ? "bg-gradient-to-r from-pink-500 to-emerald-500 text-white shadow-sm"
+                      : "text-slate-600 hover:text-pink-600"
                   }`}
                 >
                   <ShieldCheck className="w-4 h-4" />
@@ -388,13 +386,13 @@ export default function AuthPortal({
                         Nama Lengkap / Panggilan
                       </label>
                       <div className="relative">
-                        <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                        <User className="w-4 h-4 text-pink-400 absolute left-3.5 top-3.5" />
                         <input
                           type="text"
                           value={nama}
                           onChange={(e) => setNama(e.target.value)}
                           placeholder="Contoh: Nara Aditya"
-                          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none text-sm"
+                          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-pink-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 outline-none text-sm"
                         />
                       </div>
                     </div>
@@ -404,13 +402,13 @@ export default function AuthPortal({
                         Email Siswa
                       </label>
                       <div className="relative">
-                        <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                        <Mail className="w-4 h-4 text-pink-400 absolute left-3.5 top-3.5" />
                         <input
                           type="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="nama@sekolah.id atau gmail.com"
-                          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none text-sm"
+                          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-pink-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 outline-none text-sm"
                         />
                       </div>
                     </div>
@@ -422,7 +420,7 @@ export default function AuthPortal({
                       <select
                         value={kelas}
                         onChange={(e) => setKelas(e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none text-sm bg-white"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-pink-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 outline-none text-sm bg-white"
                       >
                         <option>Kelas X Merdeka 1</option>
                         <option>Kelas X Merdeka 2</option>
@@ -439,7 +437,7 @@ export default function AuthPortal({
                         type="checkbox"
                         checked={setuju}
                         onChange={(e) => setSetuju(e.target.checked)}
-                        className="mt-1 w-4 h-4 rounded text-sky-600 focus:ring-sky-500"
+                        className="mt-1 w-4 h-4 rounded text-pink-600 focus:ring-pink-500 accent-pink-500"
                       />
                       <span className="text-xs text-slate-600 leading-relaxed">
                         Saya setuju menggunakan platform ini secara positif. Data jurnal bersifat
@@ -449,8 +447,8 @@ export default function AuthPortal({
                   </>
                 ) : (
                   <>
-                    <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600">
-                      <div className="font-bold text-slate-800 mb-0.5">
+                    <div className="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200 text-xs text-slate-600">
+                      <div className="font-bold text-emerald-900 mb-0.5">
                         {roleTab === "guru"
                           ? "🎓 Portal Guru Bimbingan Konseling"
                           : "👑 Portal Administrator (Full Control)"}
@@ -466,13 +464,13 @@ export default function AuthPortal({
                         Email Terdaftar
                       </label>
                       <div className="relative">
-                        <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                        <Mail className="w-4 h-4 text-emerald-500 absolute left-3.5 top-3.5" />
                         <input
                           type="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="email@temansehat.id"
-                          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none text-sm"
+                          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none text-sm"
                         />
                       </div>
                     </div>
@@ -482,13 +480,13 @@ export default function AuthPortal({
                         Kata Sandi
                       </label>
                       <div className="relative">
-                        <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                        <Lock className="w-4 h-4 text-emerald-500 absolute left-3.5 top-3.5" />
                         <input
                           type={showPw ? "text" : "password"}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="Kata sandi"
-                          className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none text-sm"
+                          className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none text-sm"
                         />
                         <button
                           type="button"
@@ -513,10 +511,10 @@ export default function AuthPortal({
                   disabled={loading}
                   className={`w-full py-3 px-5 rounded-xl font-bold text-white shadow-md transition-all flex items-center justify-center gap-2 ${
                     roleTab === "siswa"
-                      ? "bg-gradient-to-r from-sky-500 to-cyan-600 hover:from-sky-600 hover:to-cyan-700 shadow-sky-500/25"
+                      ? "bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 shadow-pink-500/25"
                       : roleTab === "guru"
                       ? "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-emerald-500/25"
-                      : "bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 shadow-amber-500/25"
+                      : "bg-gradient-to-r from-pink-500 via-rose-500 to-emerald-500 hover:opacity-95 shadow-pink-500/25"
                   }`}
                 >
                   {loading ? (
@@ -542,7 +540,7 @@ export default function AuthPortal({
       </main>
 
       {/* FOOTER */}
-      <footer className="border-t border-slate-200/80 bg-white py-4 px-6 text-center text-xs text-slate-500">
+      <footer className="border-t border-pink-200/60 bg-white py-4 px-6 text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>
             <b>TemanSehat</b> — Platform Psikoedukasi & Bimbingan Konseling Remaja (Next.js +

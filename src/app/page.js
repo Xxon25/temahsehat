@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useCallback } from "react";
 import {
@@ -15,7 +15,9 @@ import {
   Database,
   Menu,
   X,
-  CheckCircle2
+  CheckCircle2,
+  Copy,
+  Check
 } from "lucide-react";
 
 import AuthPortal from "../components/AuthPortal";
@@ -49,12 +51,77 @@ import {
 } from "../lib/supabaseService";
 import { INITIAL_MODUL } from "../data/contentData";
 
+const SUPABASE_SQL_SCHEMA = `-- Copy & Run script ini di SQL Editor Supabase Anda
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+CREATE TABLE IF NOT EXISTS public.profiles (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  nama TEXT NOT NULL,
+  role TEXT NOT NULL CHECK (role IN ('siswa', 'guru', 'admin')) DEFAULT 'siswa',
+  kelas TEXT DEFAULT 'Kelas X',
+  password_hash TEXT,
+  last_active TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public profiles access" ON public.profiles FOR ALL USING (true) WITH CHECK (true);
+
+CREATE TABLE IF NOT EXISTS public.pendampingan (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  nama_siswa TEXT NOT NULL,
+  kelas TEXT NOT NULL,
+  topik TEXT NOT NULL,
+  jadwal_preferensi TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'Menunggu',
+  catatan_guru TEXT DEFAULT '',
+  kontak_siswa TEXT DEFAULT ''
+);
+ALTER TABLE public.pendampingan ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public pendampingan access" ON public.pendampingan FOR ALL USING (true) WITH CHECK (true);
+
+CREATE TABLE IF NOT EXISTS public.pengaduan (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  jenis TEXT NOT NULL,
+  isi TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'Baru',
+  tanggapan_admin TEXT DEFAULT '',
+  pengirim_anonim BOOLEAN DEFAULT true
+);
+ALTER TABLE public.pengaduan ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public pengaduan access" ON public.pengaduan FOR ALL USING (true) WITH CHECK (true);
+
+CREATE TABLE IF NOT EXISTS public.jurnal (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  email_siswa TEXT UNIQUE NOT NULL,
+  q1_perasaan TEXT DEFAULT '',
+  q2_hal_dijaga TEXT DEFAULT '',
+  q3_pesan_aku TEXT DEFAULT '',
+  updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+ALTER TABLE public.jurnal ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public jurnal access" ON public.jurnal FOR ALL USING (true) WITH CHECK (true);
+
+CREATE TABLE IF NOT EXISTS public.modul_progress (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  email_siswa TEXT UNIQUE NOT NULL,
+  modul_selesai INTEGER[] DEFAULT '{}',
+  skenario_selesai INTEGER[] DEFAULT '{}',
+  kartu_dibuka BOOLEAN DEFAULT false,
+  jurnal_disimpan BOOLEAN DEFAULT false,
+  updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+ALTER TABLE public.modul_progress ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public progress access" ON public.modul_progress FOR ALL USING (true) WITH CHECK (true);`;
+
 export default function TemanSehatApp() {
   const [user, setUser] = useState(null);
   const [activeMenu, setActiveMenu] = useState("beranda");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
-  // State Data
   const [isOnline, setIsOnline] = useState(false);
   const [profiles, setProfiles] = useState([]);
   const [pendampinganList, setPendampinganList] = useState([]);
@@ -77,8 +144,8 @@ export default function TemanSehatApp() {
   const [dbModalOpen, setDbModalOpen] = useState(false);
   const [dbUrlInput, setDbUrlInput] = useState("");
   const [dbKeyInput, setDbKeyInput] = useState("");
+  const [copiedSql, setCopiedSql] = useState(false);
 
-  // Toast Notification
   const [toastMsg, setToastMsg] = useState("");
 
   const showToast = useCallback((msg) => {
@@ -94,7 +161,7 @@ export default function TemanSehatApp() {
 
     const cfg = getSupabaseConfig();
     setDbUrlInput(cfg.url.includes("your-project") ? "" : cfg.url);
-    setDbKeyInput(cfg.key || "");
+    setDbKeyInput(cfg.key.includes("your-anon") ? "" : cfg.key || "");
 
     setModuls(getCustomModuls());
     setSkenarios(getCustomSkenarios());
@@ -153,7 +220,6 @@ export default function TemanSehatApp() {
     showToast("Berhasil keluar dari sesi.");
   };
 
-  // Switch Role Instan saat sedang login untuk memudahkan testing
   const handleQuickRoleSwitch = async (targetRole) => {
     if (!user) return;
     let demoAccount = null;
@@ -184,9 +250,6 @@ export default function TemanSehatApp() {
     }
   };
 
-  // -------------------------------------------------------------------------
-  // HANDLERS SISWA
-  // -------------------------------------------------------------------------
   const handleMarkModulDone = async (idx) => {
     const list = Array.from(new Set([...(progress.modul_selesai || []), idx]));
     const updated = { ...progress, modul_selesai: list };
@@ -239,9 +302,6 @@ export default function TemanSehatApp() {
     showToast("Masukan/pengaduan berhasil dikirim ke Admin!");
   };
 
-  // -------------------------------------------------------------------------
-  // HANDLERS GURU BK & ADMIN
-  // -------------------------------------------------------------------------
   const handleUpdatePendampingan = async (id, changes) => {
     await updatePendampinganItem(id, changes);
     setPendampinganList(await fetchPendampingan());
@@ -297,6 +357,13 @@ export default function TemanSehatApp() {
     showToast("Kurikulum modul dikembalikan ke 6 Modul SEHAT default.");
   };
 
+  const handleCopySql = () => {
+    navigator.clipboard.writeText(SUPABASE_SQL_SCHEMA);
+    setCopiedSql(true);
+    showToast("Script SQL Supabase berhasil disalin ke Clipboard!");
+    setTimeout(() => setCopiedSql(false), 3000);
+  };
+
   const handleSaveDbSettings = (e) => {
     e.preventDefault();
     saveSupabaseCredentials(dbUrlInput, dbKeyInput);
@@ -304,12 +371,11 @@ export default function TemanSehatApp() {
     loadAllData(user);
     showToast(
       dbUrlInput && dbKeyInput
-        ? "Kredensial Supabase disimpan & diaktifkan!"
+        ? "Kredensial Supabase disimpan & terhubung!"
         : "Berpindah ke Mode Penyimpanan Lokal."
     );
   };
 
-  // Definisi Menu Sidebar Berdasarkan Role
   const getNavigationMenus = () => {
     if (!user) return [];
 
@@ -335,7 +401,6 @@ export default function TemanSehatApp() {
       ];
     }
 
-    // Admin punya akses ke SEMUA menu
     return [
       { id: "admin", label: "Pusat Kontrol Admin", icon: ShieldCheck },
       { id: "guru", label: "Portal Guru BK", icon: GraduationCap },
@@ -360,26 +425,26 @@ export default function TemanSehatApp() {
           fetchProfiles={fetchProfiles}
         />
       ) : (
-        <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
-          {/* LEFT SIDEBAR (DESKTOP) */}
-          <aside className="hidden lg:flex lg:w-72 lg:flex-col lg:fixed lg:inset-y-0 bg-white border-r border-slate-200/90 z-30 no-print">
+        <div className="min-h-screen bg-gradient-to-br from-pink-50/40 via-white to-emerald-50/40 flex flex-col lg:flex-row">
+          {/* LEFT SIDEBAR (DESKTOP) - PINK & HIJAU */}
+          <aside className="hidden lg:flex lg:w-72 lg:flex-col lg:fixed lg:inset-y-0 bg-white border-r border-pink-200/80 z-30 no-print">
             {/* BRAND LOGO */}
-            <div className="h-16 px-6 flex items-center justify-between border-b border-slate-200/80">
+            <div className="h-16 px-6 flex items-center justify-between border-b border-pink-100">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-emerald-500 flex items-center justify-center text-white shadow-sm">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-pink-500 to-emerald-500 flex items-center justify-center text-white shadow-sm">
                   <HeartHandshake className="w-5 h-5" />
                 </div>
                 <span className="text-lg font-extrabold text-slate-900">
-                  Teman<span className="text-sky-600">Sehat</span>
+                  Teman<span className="text-pink-600">Sehat</span>
                 </span>
               </div>
               <span
                 className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase ${
                   user.role === "admin"
-                    ? "bg-amber-100 text-amber-800"
+                    ? "bg-rose-100 text-rose-800"
                     : user.role === "guru"
                     ? "bg-emerald-100 text-emerald-800"
-                    : "bg-sky-100 text-sky-800"
+                    : "bg-pink-100 text-pink-800"
                 }`}
               >
                 {user.role}
@@ -387,16 +452,16 @@ export default function TemanSehatApp() {
             </div>
 
             {/* USER PROFILE SUMMARY */}
-            <div className="p-4 mx-4 mt-4 rounded-2xl bg-gradient-to-br from-slate-50 to-sky-50/60 border border-slate-200/80">
-              <div className="text-xs font-bold text-slate-400 uppercase">Masuk Sebagai</div>
+            <div className="p-4 mx-4 mt-4 rounded-2xl bg-gradient-to-br from-pink-50/80 to-emerald-50/80 border border-pink-200/70">
+              <div className="text-xs font-bold text-pink-500 uppercase">Masuk Sebagai</div>
               <div className="text-sm font-extrabold text-slate-900 truncate mt-0.5">
                 {user.nama}
               </div>
               <div className="text-xs text-slate-500 truncate">{user.email}</div>
 
               {/* ROLE SWITCHER CEPAT UNTUK DEMO */}
-              <div className="mt-3 pt-3 border-t border-slate-200/80">
-                <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1.5">
+              <div className="mt-3 pt-3 border-t border-pink-200/60">
+                <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">
                   ⚡ Ganti Peran Instan (Demo):
                 </div>
                 <div className="grid grid-cols-3 gap-1">
@@ -406,8 +471,8 @@ export default function TemanSehatApp() {
                       onClick={() => handleQuickRoleSwitch(r)}
                       className={`py-1 rounded-lg text-[11px] font-bold capitalize transition-all ${
                         user.role === r
-                          ? "bg-sky-600 text-white shadow-sm"
-                          : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-100"
+                          ? "bg-gradient-to-r from-pink-500 to-emerald-500 text-white shadow-sm"
+                          : "bg-white border border-pink-200 text-slate-600 hover:bg-pink-50"
                       }`}
                     >
                       {r}
@@ -431,8 +496,8 @@ export default function TemanSehatApp() {
                     onClick={() => setActiveMenu(item.id)}
                     className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-sm transition-all ${
                       active
-                        ? "bg-gradient-to-r from-sky-500 to-cyan-600 text-white shadow-md shadow-sky-500/20"
-                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                        ? "bg-gradient-to-r from-pink-500 to-emerald-500 text-white shadow-md shadow-pink-500/20"
+                        : "text-slate-600 hover:bg-pink-50 hover:text-pink-700"
                     }`}
                   >
                     <Icon className="w-4 h-4 shrink-0" />
@@ -443,24 +508,24 @@ export default function TemanSehatApp() {
             </nav>
 
             {/* SIDEBAR FOOTER: DB STATUS & LOGOUT */}
-            <div className="p-4 border-t border-slate-200 space-y-2">
+            <div className="p-4 border-t border-pink-100 space-y-2">
               <button
                 onClick={() => setDbModalOpen(true)}
                 className={`w-full py-2 px-3 rounded-xl text-xs font-bold border flex items-center justify-between ${
                   isOnline
-                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                    : "bg-amber-50 text-amber-800 border-amber-200"
+                    ? "bg-emerald-50 text-emerald-700 border-emerald-300"
+                    : "bg-pink-50 text-pink-700 border-pink-300"
                 }`}
               >
                 <span className="flex items-center gap-2">
                   <span
                     className={`w-2 h-2 rounded-full ${
-                      isOnline ? "bg-emerald-500" : "bg-amber-500"
+                      isOnline ? "bg-emerald-500" : "bg-pink-500"
                     }`}
                   />
-                  {isOnline ? "Supabase Cloud" : "Database Lokal"}
+                  {isOnline ? "Supabase Cloud" : "Setup Database ⚙️"}
                 </span>
-                <span>Atur ⚙️</span>
+                <span>Atur</span>
               </button>
 
               <button
@@ -476,23 +541,23 @@ export default function TemanSehatApp() {
           {/* MAIN CONTENT AREA */}
           <div className="flex-1 lg:pl-72 flex flex-col min-h-screen">
             {/* MOBILE & TABLET TOP HEADER */}
-            <header className="lg:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 h-16 flex items-center justify-between no-print">
+            <header className="lg:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-pink-200 px-4 h-16 flex items-center justify-between no-print">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-emerald-500 flex items-center justify-center text-white">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-pink-500 to-emerald-500 flex items-center justify-center text-white">
                   <HeartHandshake className="w-5 h-5" />
                 </div>
                 <span className="font-extrabold text-lg text-slate-900">
-                  Teman<span className="text-sky-600">Sehat</span>
+                  Teman<span className="text-pink-600">Sehat</span>
                 </span>
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-1 rounded-full bg-sky-100 text-sky-800 font-extrabold text-xs capitalize">
+                <span className="px-2.5 py-1 rounded-full bg-pink-100 text-pink-800 font-extrabold text-xs capitalize">
                   {user.role}
                 </span>
                 <button
                   onClick={() => setMobileNavOpen(!mobileNavOpen)}
-                  className="p-2 rounded-xl border border-slate-200 text-slate-700"
+                  className="p-2 rounded-xl border border-pink-200 text-slate-700"
                 >
                   {mobileNavOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                 </button>
@@ -501,8 +566,8 @@ export default function TemanSehatApp() {
 
             {/* MOBILE DRAWER MENU */}
             {mobileNavOpen && (
-              <div className="lg:hidden bg-white border-b border-slate-200 p-4 space-y-2 no-print">
-                <div className="grid grid-cols-3 gap-1.5 pb-2 border-b border-slate-100">
+              <div className="lg:hidden bg-white border-b border-pink-200 p-4 space-y-2 no-print">
+                <div className="grid grid-cols-3 gap-1.5 pb-2 border-b border-pink-100">
                   {["siswa", "guru", "admin"].map((r) => (
                     <button
                       key={r}
@@ -512,8 +577,8 @@ export default function TemanSehatApp() {
                       }}
                       className={`py-1.5 rounded-lg text-xs font-bold capitalize ${
                         user.role === r
-                          ? "bg-sky-600 text-white"
-                          : "bg-slate-100 text-slate-700"
+                          ? "bg-gradient-to-r from-pink-500 to-emerald-500 text-white"
+                          : "bg-pink-50 text-slate-700"
                       }`}
                     >
                       Role: {r}
@@ -532,8 +597,8 @@ export default function TemanSehatApp() {
                       }}
                       className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl font-bold text-sm ${
                         activeMenu === item.id
-                          ? "bg-sky-600 text-white"
-                          : "text-slate-700 hover:bg-slate-100"
+                          ? "bg-gradient-to-r from-pink-500 to-emerald-500 text-white"
+                          : "text-slate-700 hover:bg-pink-50"
                       }`}
                     >
                       <Icon className="w-4 h-4" />
@@ -548,9 +613,9 @@ export default function TemanSehatApp() {
                       setDbModalOpen(true);
                       setMobileNavOpen(false);
                     }}
-                    className="flex-1 py-2 px-3 rounded-xl border border-slate-300 text-xs font-bold text-slate-700"
+                    className="flex-1 py-2 px-3 rounded-xl border border-pink-300 text-xs font-bold text-pink-700"
                   >
-                    ⚙️ Pengaturan Supabase
+                    ⚙️ Setup Supabase
                   </button>
                   <button
                     onClick={handleLogout}
@@ -607,14 +672,14 @@ export default function TemanSehatApp() {
         </div>
       )}
 
-      {/* MODAL PENGATURAN KONEKSI SUPABASE */}
+      {/* MODAL SETUP DATABASE SUPABASE LENGKAP + 1-CLICK COPY SQL */}
       {dbModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-4">
+          <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border-2 border-pink-200 space-y-5 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
-                <Database className="w-5 h-5 text-sky-600" />
-                Konfigurasi Database Supabase
+                <Database className="w-5 h-5 text-pink-600" />
+                Setup Database Supabase (3 Langkah Mudah)
               </h3>
               <button
                 onClick={() => setDbModalOpen(false)}
@@ -624,41 +689,66 @@ export default function TemanSehatApp() {
               </button>
             </div>
 
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              Masukkan <b>Project URL</b> dan <b>Anon Key</b> dari dashboard Supabase Anda (atau
-              melalui Environment Variables <code>NEXT_PUBLIC_SUPABASE_URL</code> di Vercel).
-            </p>
+            {/* STEP 1: COPY SQL */}
+            <div className="p-4 rounded-2xl bg-pink-50/70 border border-pink-200 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-extrabold uppercase text-pink-800">
+                  Langkah 1: Buat Tabel di SQL Editor Supabase
+                </span>
+                <button
+                  type="button"
+                  onClick={handleCopySql}
+                  className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-500 to-emerald-500 text-white font-bold text-xs inline-flex items-center gap-1.5 shadow-sm"
+                >
+                  {copiedSql ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copiedSql ? "Tersalin!" : "Copy Script SQL"}
+                </button>
+              </div>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Klik tombol <b>Copy Script SQL</b> di atas, lalu buka dashboard{" "}
+                <b>Supabase &gt; SQL Editor &gt; New Query</b>, paste script-nya dan klik{" "}
+                <b>Run</b>.
+              </p>
+            </div>
 
+            {/* STEP 2 & 3: INPUT URL & KEY */}
             <form onSubmit={handleSaveDbSettings} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">
-                  Supabase Project URL
+                <label className="block text-xs font-extrabold uppercase text-slate-700 mb-1">
+                  Langkah 2: Masukkan Supabase Project URL
                 </label>
                 <input
                   type="url"
                   value={dbUrlInput}
                   onChange={(e) => setDbUrlInput(e.target.value)}
                   placeholder="https://xyzcompany.supabase.co"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm outline-none focus:border-sky-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-pink-200 text-sm outline-none focus:border-pink-500"
                 />
+                <span className="text-[11px] text-slate-400">
+                  Ambil dari Supabase Dashboard &gt; Project Settings &gt; API &gt; Project URL
+                </span>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-700 mb-1">
-                  Supabase Anon Public Key
+                <label className="block text-xs font-extrabold uppercase text-slate-700 mb-1">
+                  Langkah 3: Masukkan Supabase Anon Public Key
                 </label>
                 <input
                   type="password"
                   value={dbKeyInput}
                   onChange={(e) => setDbKeyInput(e.target.value)}
                   placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm outline-none focus:border-sky-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-pink-200 text-sm outline-none focus:border-pink-500"
                 />
+                <span className="text-[11px] text-slate-400">
+                  Ambil dari Project Settings &gt; API &gt; Project API Keys (anon public)
+                </span>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-sky-50 border border-sky-200 text-xs text-sky-900">
-                💡 <b>Mode Fail-Safe:</b> Apabila dikosongkan, aplikasi otomatis berjalan menggunakan
-                penyimpanan lokal browser tanpa error.
+              <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900">
+                🌿 <b>Tips Permanen (.env.local / Vercel):</b> Kamu juga bisa menaruh URL & Key di
+                file <code>.env.local</code> atau langsung kirimkan URL & Anon Key Supabase kamu di
+                chat ini biar saya pasang otomatis!
               </div>
 
               <div className="flex justify-end gap-2 pt-2">
@@ -671,9 +761,9 @@ export default function TemanSehatApp() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs shadow-md"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-emerald-500 hover:opacity-95 text-white font-bold text-xs shadow-md"
                 >
-                  Simpan & Sinkronkan
+                  Simpan & Hubungkan Sekarang
                 </button>
               </div>
             </form>
@@ -683,8 +773,8 @@ export default function TemanSehatApp() {
 
       {/* TOAST NOTIFICATION */}
       {toastMsg && (
-        <div className="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl text-xs sm:text-sm font-bold flex items-center gap-2.5 animate-bounce no-print">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+        <div className="fixed bottom-5 right-5 z-50 bg-gradient-to-r from-pink-600 to-emerald-600 text-white px-5 py-3 rounded-2xl shadow-xl text-xs sm:text-sm font-bold flex items-center gap-2.5 animate-bounce no-print">
+          <CheckCircle2 className="w-4 h-4 text-white shrink-0" />
           <span>{toastMsg}</span>
         </div>
       )}
