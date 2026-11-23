@@ -133,15 +133,38 @@ CREATE POLICY "Public progress access"
   USING (true)
   WITH CHECK (true);
 
--- ── 7. GRANT TABLE PRIVILEGES KE ANON, AUTHENTICATED, SERVICE_ROLE ──
+-- ── 7. TABEL LIVE CHAT KONSELING SISWA & GURU BK ──────────────
+CREATE TABLE IF NOT EXISTS public.konseling_pesan (
+  id              UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at      TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  pendampingan_id TEXT NOT NULL,
+  sender_email    TEXT NOT NULL,
+  sender_name     TEXT NOT NULL,
+  sender_role     TEXT NOT NULL CHECK (sender_role IN ('siswa', 'guru', 'admin')),
+  pesan           TEXT NOT NULL
+);
+
+ALTER TABLE public.konseling_pesan ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public chat access" ON public.konseling_pesan;
+
+CREATE POLICY "Public chat access"
+  ON public.konseling_pesan
+  FOR ALL
+  TO anon, authenticated, service_role
+  USING (true)
+  WITH CHECK (true);
+
+-- ── 8. GRANT TABLE PRIVILEGES KE ANON, AUTHENTICATED, SERVICE_ROLE ──
 GRANT ALL ON TABLE public.profiles TO postgres, anon, authenticated, service_role;
 GRANT ALL ON TABLE public.pendampingan TO postgres, anon, authenticated, service_role;
 GRANT ALL ON TABLE public.pengaduan TO postgres, anon, authenticated, service_role;
 GRANT ALL ON TABLE public.jurnal TO postgres, anon, authenticated, service_role;
 GRANT ALL ON TABLE public.modul_progress TO postgres, anon, authenticated, service_role;
+GRANT ALL ON TABLE public.konseling_pesan TO postgres, anon, authenticated, service_role;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO postgres, anon, authenticated, service_role;
 
--- ── 8. SEED DATA AWAL ─────────────────────────────────────────
+-- ── 9. SEED DATA AWAL ─────────────────────────────────────────
 INSERT INTO public.profiles (email, nama, role, kelas, password_hash)
 VALUES 
   ('admin@temansehat.id', 'Dr. Hendra Wijaya (Admin Utama)', 'admin', 'Administrator', 'admin123'),

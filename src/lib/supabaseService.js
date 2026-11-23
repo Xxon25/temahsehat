@@ -76,6 +76,11 @@ export function checkIsOnline() {
   return isCloudConnected && supabaseClient !== null;
 }
 
+export function getSupabaseClient() {
+  if (!supabaseClient) initSupabase();
+  return supabaseClient;
+}
+
 // ---------------------------------------------------------------------------
 // LOCAL STORAGE SEED & HELPERS
 // ---------------------------------------------------------------------------
@@ -673,31 +678,42 @@ export async function sendChatMessage(msgObj) {
   }
   ensureSeedData();
 
-  const payload = {
-    id: "msg-" + Date.now(),
+  const recordForDb = {
     pendampingan_id: String(msgObj.pendampingan_id),
     sender_email: msgObj.sender_email || "",
     sender_name: msgObj.sender_name || "Pengguna",
     sender_role: msgObj.sender_role || "siswa",
     pesan: msgObj.pesan.trim(),
-    created_at: new Date().toISOString()
+    created_at: msgObj.created_at || new Date().toISOString()
   };
 
   if (checkIsOnline()) {
     try {
+      // Sisipkan ke Supabase tanpa id kustom agar Postgres gen_random_uuid() berjalan otomatis
       const { data, error } = await supabaseClient
         .from("konseling_pesan")
-        .insert([payload])
+        .insert([recordForDb])
         .select();
-      if (!error && data?.length) return data[0];
+      if (!error && data?.length) {
+        const cloudRecord = data[0];
+        const all = getLocal(STORAGE_KEYS.CHAT, []);
+        all.push(cloudRecord);
+        setLocal(STORAGE_KEYS.CHAT, all);
+        return cloudRecord;
+      }
     } catch (err) {
       console.warn("[Supabase sendChatMessage fallback]:", err);
     }
   }
 
+  const fallbackPayload = {
+    id: msgObj.id || ("msg-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6)),
+    ...recordForDb
+  };
+
   const all = getLocal(STORAGE_KEYS.CHAT, []);
-  all.push(payload);
+  all.push(fallbackPayload);
   setLocal(STORAGE_KEYS.CHAT, all);
-  return payload;
+  return fallbackPayload;
 }
 

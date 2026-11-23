@@ -11,8 +11,12 @@ import {
   ShieldCheck,
   CheckCircle2,
   Calendar,
-  ArrowLeft
+  ArrowLeft,
+  Wifi,
+  Copy,
+  Check
 } from "lucide-react";
+import { getSupabaseClient } from "../lib/supabaseService";
 
 export default function LiveChatModal({
   isOpen,
@@ -26,13 +30,15 @@ export default function LiveChatModal({
   const [messages, setMessages] = useState([]);
   const [inputPesan, setInputPesan] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isRealtimeConnected, setIsRealtimeConnected] = useState(false);
   const messagesEndRef = useRef(null);
+  const channelRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Load chat & set polling
+  // 1. Sinkronisasi Pesan Awal & Polling Berkala
   useEffect(() => {
     if (!isOpen || !session?.id) return;
 
@@ -40,8 +46,18 @@ export default function LiveChatModal({
     const load = async () => {
       try {
         const data = await fetchChatMessages(session.id);
-        if (isMounted) {
-          setMessages(data || []);
+        if (isMounted && data) {
+          setMessages((prev) => {
+            // Gabungkan pesan lokal & cloud tanpa duplikasi
+            const map = new Map();
+            [...prev, ...data].forEach((m) => {
+              const key = m.id || `${m.sender_email}-${m.created_at}-${m.pesan}`;
+              map.set(key, m);
+            });
+            return Array.from(map.values()).sort(
+              (a, b) => new Date(a.created_at) - new Date(b.created_at)
+            );
+          });
         }
       } catch (e) {
         console.error("Gagal memuat pesan live chat:", e);
@@ -49,13 +65,88 @@ export default function LiveChatModal({
     };
 
     load();
-    const interval = setInterval(load, 2500); // Polling setiap 2.5 detik untuk live sync
+    const interval = setInterval(load, 2500);
 
     return () => {
       isMounted = false;
       clearInterval(interval);
     };
   }, [isOpen, session?.id, fetchChatMessages]);
+
+  // 2. KONEKSI SUPABASE REALTIME WEBSOCKET (ANTAR USER / KAWAN LANGSUNG MUNCUL DETIK ITU JUGA)
+  useEffect(() => {
+    if (!isOpen || !session?.id) return;
+
+    const client = getSupabaseClient();
+    if (!client) {
+      setIsRealtimeConnected(false);
+      return;
+    }
+
+    const roomId = `room-pendampingan-${session.id}`;
+    const channel = client.channel(roomId, {
+      config: {
+        broadcast: { self: false }
+      }
+    });
+
+    // Dengar pesan baru via WebSocket Broadcast
+    channel.on("broadcast", { event: "new_message" }, ({ payload }) => {
+      if (payload && payload.pesan) {
+        setMessages((prev) => {
+          const isExist = prev.some(
+            (m) =>
+              (m.id && m.id === payload.id) ||
+              (m.pesan === payload.pesan &&
+                m.sender_email === payload.sender_email &&
+                Math.abs(new Date(m.created_at) - new Date(payload.created_at)) < 3000)
+          );
+          if (isExist) return prev;
+          return [...prev, payload];
+        });
+        setTimeout(scrollToBottom, 60);
+      }
+    });
+
+    // Dengar perubahan database Postgres
+    channel.on(
+      "postgres_changes",
+      {
+        event: "INSERT",
+        schema: "public",
+        table: "konseling_pesan",
+        filter: `pendampingan_id=eq.${session.id}`
+      },
+      (change) => {
+        if (change?.new) {
+          setMessages((prev) => {
+            const isExist = prev.some((m) => m.id === change.new.id);
+            if (isExist) return prev;
+            return [...prev, change.new];
+          });
+          setTimeout(scrollToBottom, 60);
+        }
+      }
+    );
+
+    channel.subscribe((status) => {
+      if (status === "SUBSCRIBED") {
+        setIsRealtimeConnected(true);
+      } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+        setIsRealtimeConnected(false);
+      }
+    });
+
+    channelRef.current = channel;
+
+    return () => {
+      if (channelRef.current) {
+        client.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+      setIsRealtimeConnected(false);
+    };
+  }, [isOpen, session?.id]);
 
   useEffect(() => {
     scrollToBottom();
@@ -82,18 +173,45 @@ export default function LiveChatModal({
     setInputPesan("");
     setLoading(true);
 
+    const tempId = "msg-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6);
+    const newMsgObj = {
+      id: tempId,
+      pendampingan_id: String(session.id),
+      sender_email: currentUser?.email || "anon@temansehat.id",
+      sender_name:
+        currentUser?.nama || (currentUser?.role === "siswa" ? session.nama_siswa : "Guru BK"),
+      sender_role: currentUser?.role || "siswa",
+      pesan: textToSend,
+      created_at: new Date().toISOString()
+    };
+
+    // 1. Tampilkan langsung di layar pengirim (Optimistic UI)
+    setMessages((prev) => [...prev, newMsgObj]);
+    setTimeout(scrollToBottom, 30);
+
+    // 2. Broadcast via Supabase Realtime WebSocket ke teman bicara SECARA INSTAN!
+    if (channelRef.current) {
+      try {
+        channelRef.current.send({
+          type: "broadcast",
+          event: "new_message",
+          payload: newMsgObj
+        });
+      } catch (broadcastErr) {
+        console.warn("Realtime broadcast error:", broadcastErr);
+      }
+    }
+
+    // 3. Simpan ke database cloud Supabase
     try {
-      const newMsg = await sendChatMessage({
-        pendampingan_id: session.id,
-        sender_email: currentUser?.email || "anon@temansehat.id",
-        sender_name: currentUser?.nama || (currentUser?.role === "siswa" ? session.nama_siswa : "Guru BK"),
-        sender_role: currentUser?.role || "siswa",
-        pesan: textToSend
-      });
-      setMessages((prev) => [...prev, newMsg]);
-      scrollToBottom();
+      const saved = await sendChatMessage(newMsgObj);
+      if (saved?.id && saved.id !== tempId) {
+        setMessages((prev) =>
+          prev.map((m) => (m.id === tempId ? { ...m, id: saved.id } : m))
+        );
+      }
     } catch (err) {
-      showToast("Gagal mengirim pesan: " + (err.message || "Error jaringan"));
+      console.warn("Gagal menyimpan ke database:", err);
     } finally {
       setLoading(false);
     }

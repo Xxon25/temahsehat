@@ -138,6 +138,7 @@ CREATE TABLE IF NOT EXISTS public.konseling_pesan (
 ALTER TABLE public.konseling_pesan ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Public chat access" ON public.konseling_pesan;
 CREATE POLICY "Public chat access" ON public.konseling_pesan FOR ALL TO anon, authenticated, service_role USING (true) WITH CHECK (true);
+ALTER PUBLICATION supabase_realtime ADD TABLE public.konseling_pesan;
 
 GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres, anon, authenticated, service_role;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO postgres, anon, authenticated, service_role;`;
