@@ -40,10 +40,10 @@ export default function AuthPortal({
     setErrorMsg("");
     if (newRole === "guru") {
       setEmail("gurubk@temansehat.id");
-      setPassword("gurubk123");
+      setPassword("gurubk264");
     } else if (newRole === "admin") {
       setEmail("admin@temansehat.id");
-      setPassword("admin123");
+      setPassword("admin264");
     } else {
       setEmail("");
       setPassword("");
@@ -134,7 +134,7 @@ export default function AuthPortal({
 
         if (
           roleTab === "guru" &&
-          ((cleanEmail === "gurubk@temansehat.id" && cleanPw === "gurubk123") ||
+          ((cleanEmail === "gurubk@temansehat.id" && (cleanPw === "gurubk264" || cleanPw === "gurubk123")) ||
             (cleanEmail === "auliaamaharanii260406@gmail.com" && cleanPw === "gurubk111"))
         ) {
           validRole = "guru";
@@ -144,7 +144,7 @@ export default function AuthPortal({
               : "Aulia Maharani (Guru BK)";
         } else if (
           roleTab === "admin" &&
-          ((cleanEmail === "admin@temansehat.id" && cleanPw === "admin123") ||
+          ((cleanEmail === "admin@temansehat.id" && (cleanPw === "admin264" || cleanPw === "admin123")) ||
             (cleanEmail === "auliaamaharanii260406@gmail.com" && cleanPw === "admin111"))
         ) {
           validRole = "admin";

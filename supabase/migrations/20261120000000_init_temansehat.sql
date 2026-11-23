@@ -167,12 +167,12 @@ GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO postgres, anon, authenticated, se
 -- ── 9. SEED DATA AWAL ─────────────────────────────────────────
 INSERT INTO public.profiles (email, nama, role, kelas, password_hash)
 VALUES 
-  ('admin@temansehat.id', 'Dr. Hendra Wijaya (Admin Utama)', 'admin', 'Administrator', 'admin123'),
+  ('admin@temansehat.id', 'Dr. Hendra Wijaya (Admin Utama)', 'admin', 'Administrator', 'admin264'),
   ('auliaamaharanii260406@gmail.com', 'Aulia Maharani (Admin)', 'admin', 'Administrator', 'admin111'),
-  ('gurubk@temansehat.id', 'Ibu Rahmawati, S.Pd., Kons.', 'guru', 'Koordinator BK', 'gurubk123'),
+  ('gurubk@temansehat.id', 'Ibu Rahmawati, S.Pd., Kons.', 'guru', 'Koordinator BK', 'gurubk264'),
   ('dimas@sekolah.id', 'Dimas Prasetyo', 'siswa', 'Kelas XI MIPA 2', NULL),
   ('salsa@sekolah.id', 'Salsa Nabila Putri', 'siswa', 'Kelas XII IPS 1', NULL)
-ON CONFLICT (email) DO UPDATE SET role = EXCLUDED.role, nama = EXCLUDED.nama;
+ON CONFLICT (email) DO UPDATE SET role = EXCLUDED.role, nama = EXCLUDED.nama, password_hash = EXCLUDED.password_hash;
 
 INSERT INTO public.pendampingan (nama_siswa, kelas, topik, jadwal_preferensi, status, catatan_guru, kontak_siswa)
 VALUES 
