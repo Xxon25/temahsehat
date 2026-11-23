@@ -10,7 +10,8 @@ import {
   Clock,
   ShieldCheck,
   CheckCircle2,
-  Calendar
+  Calendar,
+  ArrowLeft
 } from "lucide-react";
 
 export default function LiveChatModal({
@@ -60,6 +61,17 @@ export default function LiveChatModal({
     scrollToBottom();
   }, [messages]);
 
+  // Handle ESC key to go back / close
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen || !session) return null;
 
   const handleSend = async (e) => {
@@ -104,36 +116,55 @@ export default function LiveChatModal({
         ];
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 no-print animate-fadeIn">
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 no-print animate-fadeIn"
+    >
       <div className="bg-white rounded-3xl max-w-2xl w-full h-[90vh] max-h-[680px] shadow-2xl border-2 border-pink-200 flex flex-col overflow-hidden">
-        {/* HEADER MODAL LIVE CHAT */}
-        <div className="bg-gradient-to-r from-pink-500 via-rose-500 to-emerald-500 p-4 sm:p-5 text-white flex items-center justify-between shrink-0 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white shrink-0 shadow-inner">
-              <MessageCircle className="w-6 h-6" />
+        {/* HEADER MODAL LIVE CHAT DENGAN TOMBOL KEMBALI JELAS */}
+        <div className="bg-gradient-to-r from-pink-500 via-rose-500 to-emerald-500 p-3.5 sm:p-5 text-white flex items-center justify-between shrink-0 shadow-sm gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            {/* TOMBOL KEMBALI DI HEADER */}
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-2 sm:px-3 sm:py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-sm transition-all shrink-0 active:scale-95"
+              title="Kembali ke halaman utama"
+            >
+              <ArrowLeft className="w-5 h-5 text-white" />
+              <span className="hidden sm:inline">Kembali</span>
+            </button>
+
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white shrink-0 shadow-inner">
+              <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h3 className="font-extrabold text-base sm:text-lg tracking-tight">
+                <h3 className="font-extrabold text-sm sm:text-base tracking-tight truncate">
                   Live Chat Konseling BK
                 </h3>
-                <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-white/20 text-white">
+                <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-white/20 text-white shrink-0">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse" />
-                  Realtime Active
+                  Online
                 </span>
               </div>
-              <p className="text-xs text-pink-50 truncate max-w-xs sm:max-w-md">
+              <p className="text-[11px] sm:text-xs text-pink-50 truncate max-w-[170px] sm:max-w-md">
                 Siswa: <b>{session.nama_siswa}</b> ({session.kelas}) • Topik: {session.topik}
               </p>
             </div>
           </div>
 
+          {/* TOMBOL TUTUP DI KANAN */}
           <button
+            type="button"
             onClick={onClose}
-            className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all"
+            className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-black/15 hover:bg-black/25 text-white text-xs font-bold flex items-center gap-1 transition-all shrink-0 active:scale-95"
             title="Tutup Chat"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
+            <span className="hidden sm:inline">Tutup</span>
           </button>
         </div>
 
