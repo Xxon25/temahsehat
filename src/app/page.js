@@ -215,29 +215,17 @@ export default function TemanSehatApp() {
   }, []);
 
   useEffect(() => {
-    // Cek jika ada magic link ?login=admin atau ?admin=true
+    // Keamanan: Cek jika ada upaya akses via tautan bypass
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
-      const isAutoAdmin =
+      if (
         params.get("login") === "admin" ||
-        params.get("role") === "admin" ||
-        params.get("admin") === "true";
-      if (isAutoAdmin) {
-        const adminUser = {
-          id: "admin-master-id",
-          email: "admin@temansehat.id",
-          nama: "Dr. Hendra Wijaya (Admin)",
-          role: "admin",
-          kelas: "Administrator"
-        };
-        setUser(adminUser);
-        setActiveMenu("admin");
-        sessionStorage.setItem("TS_NEXT_ACTIVE_USER", JSON.stringify(adminUser));
-        loadAllData(adminUser);
-        showToast("👑 Masuk otomatis sebagai Admin via tautan khusus!");
+        params.get("admin") === "true" ||
+        params.get("role") === "admin"
+      ) {
+        showToast("🔒 Akses ditolak: Halaman Admin memerlukan login dengan akun Admin terlebih dahulu.");
         const newUrl = window.location.pathname;
         window.history.replaceState({}, document.title, newUrl);
-        return;
       }
     }
 

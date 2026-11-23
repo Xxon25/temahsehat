@@ -14,8 +14,7 @@ import {
   RefreshCw,
   UserPlus,
   Share2,
-  Copy,
-  Link as LinkIcon
+  Copy
 } from "lucide-react";
 
 export default function TeacherAndAdminViews({
@@ -68,16 +67,6 @@ export default function TeacherAndAdminViews({
 
   const siswaProfiles = profiles.filter((p) => p.role === "siswa");
   const guruProfiles = profiles.filter((p) => p.role === "guru");
-
-  const handleCopyAdminLink = () => {
-    if (typeof window !== "undefined") {
-      const adminUrl = `${window.location.origin}/?login=admin`;
-      navigator.clipboard.writeText(adminUrl);
-      if (showToast) {
-        showToast("🔗 Link Admin disalin! Siapapun yang buka link ini akan langsung otomatis masuk Admin.");
-      }
-    }
-  };
 
   // -------------------------------------------------------------------------
   // 1. PORTAL GURU BK (HIJAU & PINK THEME)
@@ -361,6 +350,26 @@ export default function TeacherAndAdminViews({
   // 2. PUSAT KONTROL ADMIN (PINK & HIJAU SUPERUSER THEME)
   // -------------------------------------------------------------------------
   if (activeMenu === "admin") {
+    // PROTEKSI AKSES: Hanya role admin yang diizinkan
+    if (user?.role !== "admin") {
+      return (
+        <div className="p-8 max-w-lg mx-auto my-12 bg-white rounded-3xl border-2 border-rose-200 shadow-xl text-center space-y-4">
+          <div className="w-16 h-16 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto shadow-sm">
+            <ShieldCheck className="w-8 h-8" />
+          </div>
+          <h2 className="text-xl font-extrabold text-slate-900">Akses Terbatas: Wajib Login Administrator</h2>
+          <p className="text-sm text-slate-600 leading-relaxed">
+            Halaman Pusat Kontrol Admin tidak dapat dibuka secara langsung via tautan atau oleh pengguna non-admin. Anda harus login menggunakan akun Administrator yang sah terlebih dahulu.
+          </p>
+          <div className="pt-2">
+            <span className="inline-block px-3.5 py-1.5 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
+              Peran Akun Anda: <b className="text-pink-600 uppercase">{user?.role || "Belum Login"}</b>
+            </span>
+          </div>
+        </div>
+      );
+    }
+
     const filteredUsers = profiles.filter((u) => {
       const q = userSearch.toLowerCase();
       return (
@@ -427,14 +436,6 @@ export default function TeacherAndAdminViews({
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <button
-              onClick={handleCopyAdminLink}
-              className="self-start lg:self-auto px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold text-xs sm:text-sm inline-flex items-center gap-2 shrink-0 shadow-md transition-all"
-              title="Salin link langsung masuk sebagai Admin"
-            >
-              <LinkIcon className="w-4 h-4 text-slate-900" />
-              Bagikan Link Akses Admin Otomatis
-            </button>
             <button
               onClick={onOpenDbModal}
               className="self-start lg:self-auto px-4 py-2.5 rounded-xl bg-white text-pink-700 hover:bg-pink-50 font-bold text-xs sm:text-sm inline-flex items-center gap-2 shrink-0 shadow-md"
