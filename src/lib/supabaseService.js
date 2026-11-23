@@ -279,6 +279,7 @@ export async function upsertProfile(userObj) {
     nama: userObj.nama.trim(),
     role: userObj.role || "siswa",
     kelas: userObj.kelas || "Kelas XI",
+    ...(userObj.password_hash ? { password_hash: userObj.password_hash } : {}),
     last_active: new Date().toISOString()
   };
 
@@ -345,6 +346,67 @@ export async function removeUserProfile(email) {
   const list = getLocal(STORAGE_KEYS.PROFILES, []).filter((u) => u.email !== email);
   setLocal(STORAGE_KEYS.PROFILES, list);
   return true;
+}
+
+export async function loginWithCredentials(email, password) {
+  if (!email || !password) {
+    throw new Error("Email dan kata sandi wajib diisi.");
+  }
+  const cleanEmail = email.trim().toLowerCase();
+  const cleanPw = password.trim();
+
+  // 1. Kredensial default Guru BK & Admin
+  if (cleanEmail === "admin@temansehat.id" && cleanPw === "admin264") {
+    return {
+      email: "admin@temansehat.id",
+      nama: "Dr. Hendra Wijaya (Admin)",
+      role: "admin",
+      kelas: "Administrator"
+    };
+  }
+
+  if (cleanEmail === "gurubk@temansehat.id" && cleanPw === "gurubk264") {
+    return {
+      email: "gurubk@temansehat.id",
+      nama: "Ibu Rahmawati, S.Pd., Kons.",
+      role: "guru",
+      kelas: "Koordinator BK"
+    };
+  }
+
+  // 2. Cek database Supabase profiles
+  if (checkIsOnline()) {
+    try {
+      const { data, error } = await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq("email", cleanEmail)
+        .limit(1);
+
+      if (!error && data?.length) {
+        const user = data[0];
+        if (user.password_hash && user.password_hash !== cleanPw) {
+          throw new Error("Kata sandi yang Anda masukkan salah.");
+        }
+        return user;
+      }
+    } catch (err) {
+      if (err.message === "Kata sandi yang Anda masukkan salah.") throw err;
+      console.warn("[Supabase loginWithCredentials fallback]:", err);
+    }
+  }
+
+  // 3. Fallback profil lokal
+  const allProfiles = getLocal(STORAGE_KEYS.PROFILES, []);
+  const matched = allProfiles.find((p) => p.email.toLowerCase() === cleanEmail);
+  if (matched) {
+    if (matched.password_hash && matched.password_hash !== cleanPw) {
+      throw new Error("Kata sandi yang Anda masukkan salah.");
+    }
+    return matched;
+  }
+
+  throw new Error("Akun dengan email tersebut tidak ditemukan. Silakan periksa kembali atau daftar akun baru.");
 }
 
 // ---------------------------------------------------------------------------

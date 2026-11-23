@@ -263,36 +263,6 @@ export default function TemanSehatApp() {
     showToast("Berhasil keluar dari sesi.");
   };
 
-  const handleQuickRoleSwitch = async (targetRole) => {
-    if (!user) return;
-    let demoAccount = null;
-    if (targetRole === "siswa") {
-      demoAccount = await upsertProfile({
-        nama: "Dimas Prasetyo",
-        email: "dimas@sekolah.id",
-        role: "siswa",
-        kelas: "Kelas XI MIPA 2"
-      });
-    } else if (targetRole === "guru") {
-      demoAccount = await upsertProfile({
-        nama: "Ibu Rahmawati, S.Pd., Kons.",
-        email: "gurubk@temansehat.id",
-        role: "guru",
-        kelas: "Koordinator BK"
-      });
-    } else if (targetRole === "admin") {
-      demoAccount = await upsertProfile({
-        nama: "Dr. Hendra Wijaya (Admin)",
-        email: "admin@temansehat.id",
-        role: "admin",
-        kelas: "Administrator"
-      });
-    }
-    if (demoAccount) {
-      handleLoginSuccess(demoAccount);
-    }
-  };
-
   const handleMarkModulDone = async (idx) => {
     const list = Array.from(new Set([...(progress.modul_selesai || []), idx]));
     const updated = { ...progress, modul_selesai: list };
@@ -501,33 +471,16 @@ export default function TemanSehatApp() {
 
             {/* USER PROFILE SUMMARY */}
             <div className="p-4 mx-4 mt-4 rounded-2xl bg-gradient-to-br from-pink-50/80 to-emerald-50/80 border border-pink-200/70">
-              <div className="text-xs font-bold text-pink-500 uppercase">Masuk Sebagai</div>
-              <div className="text-sm font-extrabold text-slate-900 truncate mt-0.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-pink-600 uppercase">Akun Aktif</span>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-white border border-pink-200 text-slate-800 shadow-sm">
+                  {user.role}
+                </span>
+              </div>
+              <div className="text-sm font-extrabold text-slate-900 truncate mt-1.5">
                 {user.nama}
               </div>
               <div className="text-xs text-slate-500 truncate">{user.email}</div>
-
-              {/* ROLE SWITCHER CEPAT UNTUK DEMO */}
-              <div className="mt-3 pt-3 border-t border-pink-200/60">
-                <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">
-                  ⚡ Ganti Peran Instan (Demo):
-                </div>
-                <div className="grid grid-cols-3 gap-1">
-                  {["siswa", "guru", "admin"].map((r) => (
-                    <button
-                      key={r}
-                      onClick={() => handleQuickRoleSwitch(r)}
-                      className={`py-1 rounded-lg text-[11px] font-bold capitalize transition-all ${
-                        user.role === r
-                          ? "bg-gradient-to-r from-pink-500 to-emerald-500 text-white shadow-sm"
-                          : "bg-white border border-pink-200 text-slate-600 hover:bg-pink-50"
-                      }`}
-                    >
-                      {r}
-                    </button>
-                  ))}
-                </div>
-              </div>
             </div>
 
             {/* NAVIGATION ITEMS */}
@@ -615,23 +568,11 @@ export default function TemanSehatApp() {
             {/* MOBILE DRAWER MENU */}
             {mobileNavOpen && (
               <div className="lg:hidden bg-white border-b border-pink-200 p-4 space-y-2 no-print">
-                <div className="grid grid-cols-3 gap-1.5 pb-2 border-b border-pink-100">
-                  {["siswa", "guru", "admin"].map((r) => (
-                    <button
-                      key={r}
-                      onClick={() => {
-                        handleQuickRoleSwitch(r);
-                        setMobileNavOpen(false);
-                      }}
-                      className={`py-1.5 rounded-lg text-xs font-bold capitalize ${
-                        user.role === r
-                          ? "bg-gradient-to-r from-pink-500 to-emerald-500 text-white"
-                          : "bg-pink-50 text-slate-700"
-                      }`}
-                    >
-                      Role: {r}
-                    </button>
-                  ))}
+                <div className="pb-2 border-b border-pink-100 flex items-center justify-between">
+                  <span className="text-xs text-slate-500 font-semibold">{user.nama}</span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-pink-100 text-pink-800">
+                    {user.role}
+                  </span>
                 </div>
 
                 {navMenus.map((item) => {
