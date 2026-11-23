@@ -16,7 +16,8 @@ const STORAGE_KEYS = {
   JURNAL: "TS_NEXT_JURNAL",
   PROGRESS: "TS_NEXT_PROGRESS",
   MODUL: "TS_NEXT_CUSTOM_MODUL",
-  SKENARIO: "TS_NEXT_CUSTOM_SKENARIO"
+  SKENARIO: "TS_NEXT_CUSTOM_SKENARIO",
+  CHAT: "TS_NEXT_CHAT_MESSAGES"
 };
 
 let supabaseClient = null;
@@ -214,6 +215,29 @@ export function ensureSeedData() {
         status: "Selesai",
         tanggapan_admin: "Terima kasih atas apresiasinya! Silakan bagikan Kartu SEHAT ke rekan-rekan kelas.",
         created_at: new Date(Date.now() - 3600000 * 50).toISOString()
+      }
+    ]);
+  }
+
+  if (!localStorage.getItem(STORAGE_KEYS.CHAT)) {
+    setLocal(STORAGE_KEYS.CHAT, [
+      {
+        id: "msg-init-1",
+        pendampingan_id: "pend-102",
+        sender_email: "gurubk@temansehat.id",
+        sender_name: "Ibu Rahmawati, S.Pd., Kons.",
+        sender_role: "guru",
+        pesan: "Halo Salsa, selamat siang! Sesi konseling pertemananmu sudah Ibu jadwalkan pukul 15.00 WIB hari ini di Ruang BK 2 ya. Apakah ada hal yang ingin kamu ceritakan terlebih dahulu di chat ini?",
+        created_at: new Date(Date.now() - 3600000 * 2).toISOString()
+      },
+      {
+        id: "msg-init-2",
+        pendampingan_id: "pend-102",
+        sender_email: "salsa@sekolah.id",
+        sender_name: "Salsa Nabila Putri",
+        sender_role: "siswa",
+        pesan: "Baik Bu, terima kasih banyak. Nanti jam 3 sore setelah pulang sekolah saya langsung ke ruangan Ibu ya.",
+        created_at: new Date(Date.now() - 3600000 * 1.5).toISOString()
       }
     ]);
   }
@@ -616,3 +640,64 @@ export function saveCustomSkenarios(list) {
   setLocal(STORAGE_KEYS.SKENARIO, list);
   return list;
 }
+
+// ---------------------------------------------------------------------------
+// 6. LIVE CHAT KONSELING SISWA & GURU BK
+// ---------------------------------------------------------------------------
+export async function fetchChatMessages(pendampinganId) {
+  if (!pendampinganId) return [];
+  ensureSeedData();
+
+  if (checkIsOnline()) {
+    try {
+      const { data, error } = await supabaseClient
+        .from("konseling_pesan")
+        .select("*")
+        .eq("pendampingan_id", String(pendampinganId))
+        .order("created_at", { ascending: true });
+      if (!error && data) return data;
+    } catch (err) {
+      console.warn("[Supabase fetchChatMessages fallback]:", err);
+    }
+  }
+
+  const all = getLocal(STORAGE_KEYS.CHAT, []);
+  return all
+    .filter((m) => String(m.pendampingan_id) === String(pendampinganId))
+    .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+}
+
+export async function sendChatMessage(msgObj) {
+  if (!msgObj?.pendampingan_id || !msgObj?.pesan?.trim()) {
+    throw new Error("Pesan tidak boleh kosong.");
+  }
+  ensureSeedData();
+
+  const payload = {
+    id: "msg-" + Date.now(),
+    pendampingan_id: String(msgObj.pendampingan_id),
+    sender_email: msgObj.sender_email || "",
+    sender_name: msgObj.sender_name || "Pengguna",
+    sender_role: msgObj.sender_role || "siswa",
+    pesan: msgObj.pesan.trim(),
+    created_at: new Date().toISOString()
+  };
+
+  if (checkIsOnline()) {
+    try {
+      const { data, error } = await supabaseClient
+        .from("konseling_pesan")
+        .insert([payload])
+        .select();
+      if (!error && data?.length) return data[0];
+    } catch (err) {
+      console.warn("[Supabase sendChatMessage fallback]:", err);
+    }
+  }
+
+  const all = getLocal(STORAGE_KEYS.CHAT, []);
+  all.push(payload);
+  setLocal(STORAGE_KEYS.CHAT, all);
+  return payload;
+}
+

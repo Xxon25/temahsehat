@@ -23,6 +23,7 @@ import {
 import AuthPortal from "../components/AuthPortal";
 import StudentViews from "../components/StudentViews";
 import TeacherAndAdminViews from "../components/TeacherAndAdminViews";
+import LiveChatModal from "../components/LiveChatModal";
 
 import {
   initSupabase,
@@ -47,7 +48,9 @@ import {
   saveStudentProgress,
   getCustomModuls,
   saveCustomModuls,
-  getCustomSkenarios
+  getCustomSkenarios,
+  fetchChatMessages,
+  sendChatMessage
 } from "../lib/supabaseService";
 import { INITIAL_MODUL } from "../data/contentData";
 
@@ -123,6 +126,19 @@ ALTER TABLE public.modul_progress ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Public progress access" ON public.modul_progress;
 CREATE POLICY "Public progress access" ON public.modul_progress FOR ALL TO anon, authenticated, service_role USING (true) WITH CHECK (true);
 
+CREATE TABLE IF NOT EXISTS public.konseling_pesan (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  pendampingan_id TEXT NOT NULL,
+  sender_email TEXT NOT NULL,
+  sender_name TEXT NOT NULL,
+  sender_role TEXT NOT NULL CHECK (sender_role IN ('siswa', 'guru', 'admin')),
+  pesan TEXT NOT NULL
+);
+ALTER TABLE public.konseling_pesan ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Public chat access" ON public.konseling_pesan;
+CREATE POLICY "Public chat access" ON public.konseling_pesan FOR ALL TO anon, authenticated, service_role USING (true) WITH CHECK (true);
+
 GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres, anon, authenticated, service_role;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO postgres, anon, authenticated, service_role;`;
 
@@ -148,6 +164,9 @@ export default function TemanSehatApp() {
     q2_hal_dijaga: "",
     q3_pesan_aku: ""
   });
+
+  const [chatModalOpen, setChatModalOpen] = useState(false);
+  const [activeChatSession, setActiveChatSession] = useState(null);
 
   // Modal Pengaturan Supabase
   const [dbModalOpen, setDbModalOpen] = useState(false);
@@ -196,6 +215,32 @@ export default function TemanSehatApp() {
   }, []);
 
   useEffect(() => {
+    // Cek jika ada magic link ?login=admin atau ?admin=true
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const isAutoAdmin =
+        params.get("login") === "admin" ||
+        params.get("role") === "admin" ||
+        params.get("admin") === "true";
+      if (isAutoAdmin) {
+        const adminUser = {
+          id: "admin-master-id",
+          email: "admin@temansehat.id",
+          nama: "Dr. Hendra Wijaya (Admin)",
+          role: "admin",
+          kelas: "Administrator"
+        };
+        setUser(adminUser);
+        setActiveMenu("admin");
+        sessionStorage.setItem("TS_NEXT_ACTIVE_USER", JSON.stringify(adminUser));
+        loadAllData(adminUser);
+        showToast("👑 Masuk otomatis sebagai Admin via tautan khusus!");
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+        return;
+      }
+    }
+
     try {
       const savedUser = sessionStorage.getItem("TS_NEXT_ACTIVE_USER");
       if (savedUser) {
@@ -209,7 +254,7 @@ export default function TemanSehatApp() {
       }
     } catch (e) {}
     loadAllData(null);
-  }, [loadAllData]);
+  }, [loadAllData, showToast]);
 
   const handleLoginSuccess = async (loggedInUser) => {
     setUser(loggedInUser);
@@ -364,6 +409,11 @@ export default function TemanSehatApp() {
     setModuls(INITIAL_MODUL);
     saveCustomModuls(INITIAL_MODUL);
     showToast("Kurikulum modul dikembalikan ke 6 Modul SEHAT default.");
+  };
+
+  const handleOpenChat = (session) => {
+    setActiveChatSession(session);
+    setChatModalOpen(true);
   };
 
   const handleCopySql = () => {
@@ -654,6 +704,7 @@ export default function TemanSehatApp() {
                 onSubmitPendampingan={handleSubmitPendampingan}
                 pengaduanList={pengaduanList}
                 onSubmitPengaduan={handleSubmitPengaduan}
+                onOpenChat={handleOpenChat}
                 showToast={showToast}
               />
 
@@ -674,12 +725,24 @@ export default function TemanSehatApp() {
                 onAddCustomModul={handleAddCustomModul}
                 onResetCustomModuls={handleResetCustomModuls}
                 onOpenDbModal={() => setDbModalOpen(true)}
+                onOpenChat={handleOpenChat}
                 isOnline={isOnline}
               />
             </main>
           </div>
         </div>
       )}
+
+      {/* MODAL LIVE CHAT KONSELING BK */}
+      <LiveChatModal
+        isOpen={chatModalOpen}
+        onClose={() => setChatModalOpen(false)}
+        session={activeChatSession}
+        currentUser={user}
+        fetchChatMessages={fetchChatMessages}
+        sendChatMessage={sendChatMessage}
+        showToast={showToast}
+      />
 
       {/* MODAL SETUP DATABASE SUPABASE LENGKAP + 1-CLICK COPY SQL */}
       {dbModalOpen && (

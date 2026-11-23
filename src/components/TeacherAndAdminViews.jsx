@@ -12,7 +12,10 @@ import {
   GraduationCap,
   Database,
   RefreshCw,
-  UserPlus
+  UserPlus,
+  Share2,
+  Copy,
+  Link as LinkIcon
 } from "lucide-react";
 
 export default function TeacherAndAdminViews({
@@ -32,6 +35,8 @@ export default function TeacherAndAdminViews({
   onAddCustomModul,
   onResetCustomModuls,
   onOpenDbModal,
+  onOpenChat,
+  showToast,
   isOnline
 }) {
   const [bkTab, setBkTab] = useState("konseling");
@@ -63,6 +68,16 @@ export default function TeacherAndAdminViews({
 
   const siswaProfiles = profiles.filter((p) => p.role === "siswa");
   const guruProfiles = profiles.filter((p) => p.role === "guru");
+
+  const handleCopyAdminLink = () => {
+    if (typeof window !== "undefined") {
+      const adminUrl = `${window.location.origin}/?login=admin`;
+      navigator.clipboard.writeText(adminUrl);
+      if (showToast) {
+        showToast("🔗 Link Admin disalin! Siapapun yang buka link ini akan langsung otomatis masuk Admin.");
+      }
+    }
+  };
 
   // -------------------------------------------------------------------------
   // 1. PORTAL GURU BK (HIJAU & PINK THEME)
@@ -264,6 +279,15 @@ export default function TeacherAndAdminViews({
                     <div className="flex flex-wrap items-center gap-2 pt-1">
                       <button
                         type="button"
+                        onClick={() => onOpenChat && onOpenChat(item)}
+                        className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-emerald-500 hover:opacity-95 text-white font-bold text-xs inline-flex items-center gap-1.5 shadow-sm"
+                      >
+                        <MessageSquare className="w-3.5 h-3.5" />
+                        Live Chat Siswa
+                      </button>
+
+                      <button
+                        type="button"
                         onClick={() => {
                           setEditingNoteId(item.id);
                           setNoteText(
@@ -402,13 +426,23 @@ export default function TeacherAndAdminViews({
             </p>
           </div>
 
-          <button
-            onClick={onOpenDbModal}
-            className="self-start lg:self-auto px-4 py-2.5 rounded-xl bg-white text-pink-700 hover:bg-pink-50 font-bold text-xs sm:text-sm inline-flex items-center gap-2 shrink-0 shadow-md"
-          >
-            <Database className="w-4 h-4 text-emerald-600" />
-            {isOnline ? "Supabase Cloud Terhubung" : "Setup Database Supabase ⚙️"}
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={handleCopyAdminLink}
+              className="self-start lg:self-auto px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold text-xs sm:text-sm inline-flex items-center gap-2 shrink-0 shadow-md transition-all"
+              title="Salin link langsung masuk sebagai Admin"
+            >
+              <LinkIcon className="w-4 h-4 text-slate-900" />
+              Bagikan Link Akses Admin Otomatis
+            </button>
+            <button
+              onClick={onOpenDbModal}
+              className="self-start lg:self-auto px-4 py-2.5 rounded-xl bg-white text-pink-700 hover:bg-pink-50 font-bold text-xs sm:text-sm inline-flex items-center gap-2 shrink-0 shadow-md"
+            >
+              <Database className="w-4 h-4 text-emerald-600" />
+              {isOnline ? "Supabase Cloud Terhubung" : "Setup Database Supabase ⚙️"}
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -665,6 +699,14 @@ export default function TeacherAndAdminViews({
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => onOpenChat && onOpenChat(item)}
+                      className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-500 to-emerald-500 hover:opacity-95 text-white font-bold text-xs inline-flex items-center gap-1 shadow-sm"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5" />
+                      Live Chat
+                    </button>
                     <select
                       value={item.status}
                       onChange={(e) =>

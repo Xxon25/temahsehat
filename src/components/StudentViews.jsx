@@ -37,6 +37,7 @@ export default function StudentViews({
   onSubmitPendampingan,
   pengaduanList,
   onSubmitPengaduan,
+  onOpenChat,
   showToast
 }) {
   const [selectedModulIdx, setSelectedModulIdx] = useState(0);
@@ -306,6 +307,15 @@ export default function StudentViews({
                           <b>Pesan Guru BK:</b> {k.catatan_guru}
                         </div>
                       )}
+
+                      <button
+                        type="button"
+                        onClick={() => onOpenChat(k)}
+                        className="mt-2 w-full py-1.5 px-3 rounded-xl bg-gradient-to-r from-pink-500 to-emerald-500 hover:opacity-95 text-white font-bold text-xs inline-flex items-center justify-center gap-1.5 shadow-sm transition-all"
+                      >
+                        <MessageCircle className="w-3.5 h-3.5" />
+                        Buka Live Chat dengan Guru BK
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -1143,6 +1153,20 @@ export default function StudentViews({
                       {item.catatan_guru}
                     </div>
                   )}
+
+                  <div className="pt-2 flex items-center justify-between gap-2 border-t border-pink-100">
+                    <button
+                      type="button"
+                      onClick={() => onOpenChat(item)}
+                      className="py-1.5 px-3.5 rounded-xl bg-gradient-to-r from-pink-500 to-emerald-500 hover:opacity-95 text-white font-bold text-xs inline-flex items-center gap-1.5 shadow-sm transition-all"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" />
+                      Live Chat Konseling BK
+                    </button>
+                    <span className="text-[11px] font-semibold text-slate-400">
+                      Klik untuk chat langsung
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
