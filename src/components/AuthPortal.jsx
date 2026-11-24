@@ -21,7 +21,7 @@ import {
   ShieldAlert,
   ChevronRight
 } from "lucide-react";
-import { loginWithCredentials } from "../lib/supabaseService";
+import { loginWithCredentials, checkEmailExists } from "../lib/supabaseService";
 
 const PROTOTYPE_PREVIEWS = [
   {
@@ -134,6 +134,13 @@ export default function AuthPortal({
 
     setLoading(true);
     try {
+      const exists = await checkEmailExists(email);
+      if (exists) {
+        setErrorMsg("Email ini sudah terdaftar. Silakan gunakan tab 'Masuk Akun' untuk login.");
+        setLoading(false);
+        return;
+      }
+
       const user = await upsertProfile({
         nama,
         email,

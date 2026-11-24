@@ -348,6 +348,23 @@ export async function removeUserProfile(email) {
   return true;
 }
 
+export async function checkEmailExists(email) {
+  if (!email) return false;
+  const cleanEmail = email.trim().toLowerCase();
+  if (checkIsOnline()) {
+    try {
+      const { data } = await supabaseClient
+        .from("profiles")
+        .select("id, email")
+        .eq("email", cleanEmail)
+        .limit(1);
+      if (data && data.length > 0) return true;
+    } catch (e) {}
+  }
+  const all = getLocal(STORAGE_KEYS.PROFILES, []);
+  return all.some((p) => p.email.toLowerCase() === cleanEmail);
+}
+
 export async function loginWithCredentials(email, password) {
   if (!email || !password) {
     throw new Error("Email dan kata sandi wajib diisi.");
@@ -355,8 +372,11 @@ export async function loginWithCredentials(email, password) {
   const cleanEmail = email.trim().toLowerCase();
   const cleanPw = password.trim();
 
-  // 1. Kredensial default Guru BK & Admin
-  if (cleanEmail === "admin@temansehat.id" && cleanPw === "admin264") {
+  // 1. Kredensial khusus Guru BK & Admin
+  if (cleanEmail === "admin@temansehat.id") {
+    if (cleanPw !== "admin264") {
+      throw new Error("Kata sandi Administrator salah. Harap periksa kembali.");
+    }
     return {
       email: "admin@temansehat.id",
       nama: "Dr. Hendra Wijaya (Admin)",
@@ -365,7 +385,10 @@ export async function loginWithCredentials(email, password) {
     };
   }
 
-  if (cleanEmail === "gurubk@temansehat.id" && cleanPw === "gurubk264") {
+  if (cleanEmail === "gurubk@temansehat.id") {
+    if (cleanPw !== "gurubk264") {
+      throw new Error("Kata sandi Guru BK salah. Harap periksa kembali.");
+    }
     return {
       email: "gurubk@temansehat.id",
       nama: "Ibu Rahmawati, S.Pd., Kons.",
@@ -375,6 +398,7 @@ export async function loginWithCredentials(email, password) {
   }
 
   // 2. Cek database Supabase profiles
+  let user = null;
   if (checkIsOnline()) {
     try {
       const { data, error } = await supabaseClient
@@ -384,29 +408,30 @@ export async function loginWithCredentials(email, password) {
         .limit(1);
 
       if (!error && data?.length) {
-        const user = data[0];
-        if (user.password_hash && user.password_hash !== cleanPw) {
-          throw new Error("Kata sandi yang Anda masukkan salah.");
-        }
-        return user;
+        user = data[0];
       }
     } catch (err) {
-      if (err.message === "Kata sandi yang Anda masukkan salah.") throw err;
-      console.warn("[Supabase loginWithCredentials fallback]:", err);
+      console.warn("[Supabase loginWithCredentials lookup]:", err);
     }
   }
 
-  // 3. Fallback profil lokal
-  const allProfiles = getLocal(STORAGE_KEYS.PROFILES, []);
-  const matched = allProfiles.find((p) => p.email.toLowerCase() === cleanEmail);
-  if (matched) {
-    if (matched.password_hash && matched.password_hash !== cleanPw) {
-      throw new Error("Kata sandi yang Anda masukkan salah.");
-    }
-    return matched;
+  // 3. Fallback profil lokal jika offline
+  if (!user) {
+    const allProfiles = getLocal(STORAGE_KEYS.PROFILES, []);
+    user = allProfiles.find((p) => p.email.toLowerCase() === cleanEmail);
   }
 
-  throw new Error("Akun dengan email tersebut tidak ditemukan. Silakan periksa kembali atau daftar akun baru.");
+  if (!user) {
+    throw new Error("Akun dengan email ini belum terdaftar. Silakan pilih tab 'Daftar Baru' untuk membuat akun.");
+  }
+
+  // 4. VALIDASI KATA SANDI SECARA KETAT (TIDAK BOLEH TEMBUS DENGAN SANDI ASAL)
+  const expectedPassword = user.password_hash || "siswa123";
+  if (cleanPw !== expectedPassword) {
+    throw new Error("Kata sandi yang Anda masukkan salah. Harap periksa kembali.");
+  }
+
+  return user;
 }
 
 // ---------------------------------------------------------------------------
